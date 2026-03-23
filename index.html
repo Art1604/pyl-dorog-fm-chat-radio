@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>ПыЛь_ДоРоГ FM — чат и радио</title>
+  <style>
+    :root { --bg:#fff; --text:#111; --muted:#666; --border:#e6e6e6; --btn:#f2f2f2; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; background:var(--bg); color:var(--text); }
+    .topbar{
+      position: sticky; top: 0; z-index: 10;
+      display:flex; gap:8px; align-items:center; justify-content:space-between;
+      padding:10px 12px; border-bottom:1px solid var(--border); background:var(--bg);
+    }
+    .title{ font-weight:800; }
+    .btns{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+    .btn{
+      border:1px solid var(--border);
+      background:var(--btn);
+      padding:8px 10px;
+      border-radius:10px;
+      font-weight:700;
+      cursor:pointer;
+      font-size:13px;
+      white-space:nowrap;
+    }
+    .hint{ padding:8px 12px; color:var(--muted); font-size:13px; min-height:18px; }
+    .frameWrap{ height: calc(100dvh - 54px - 34px); }
+    iframe{ width:100%; height:100%; border:0; display:block; background:#fff; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="title">ПыЛь_ДоРоГ FM — эфир и чат</div>
+    <div class="btns">
+      <button class="btn" id="share">📤 Поделиться</button>
+      <button class="btn" id="open">🌐 Открыть на сайте</button>
+    </div>
+  </div>
+
+  <div class="hint" id="hint"></div>
+
+  <div class="frameWrap">
+    <iframe
+      src="https://volnorez.com/pyl_dorog-fm/"
+      allow="autoplay; clipboard-write; fullscreen"
+      referrerpolicy="no-referrer-when-downgrade"
+    ></iframe>
+  </div>
+
+  <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+  <script>
+    const RADIO_PAGE = 'https://volnorez.com/pyl_dorog-fm/';
+    const hintEl = document.getElementById('hint');
+    const setHint = (t) => hintEl.textContent = t || '';
+
+    const hasBridge = () => typeof window.vkBridge !== 'undefined' && vkBridge?.send;
+
+    (async () => {
+      if (!hasBridge()) return;
+      try { await vkBridge.send('VKWebAppInit', {}); } catch(e) {}
+    })();
+
+    async function openUrl(url){
+      if (hasBridge()) {
+        try { await vkBridge.send('VKWebAppOpenURL', { url }); return; } catch(e) {}
+      }
+      window.open(url, '_blank', 'noopener');
+    }
+
+    async function shareLink(link){
+      if (hasBridge()) {
+        try { await vkBridge.send('VKWebAppShare', { link }); return true; } catch(e) {}
+      }
+      return false;
+    }
+
+    document.getElementById('open').onclick = () => openUrl(RADIO_PAGE);
+    document.getElementById('share').onclick = async () => {
+      const ok = await shareLink(RADIO_PAGE);
+      if (!ok) setHint('Шаринг недоступен в этом режиме.');
+    };
+
+    setHint('Если внутри пусто/ошибка — значит Volnorez запретил iframe. Тогда используйте “Открыть на сайте”.');
+  </script>
+</body>
+</html>

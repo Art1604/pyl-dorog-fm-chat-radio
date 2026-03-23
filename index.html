@@ -4,73 +4,93 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>ПыЛь_ДоРоГ FM — плеер и чат</title>
+
   <style>
     :root{
-      --bg:#0b0b0f; --card:#12121a; --text:#fff; --muted:rgba(255,255,255,.72);
-      --border:rgba(255,255,255,.10); --radius:16px;
+      --bg:#0b0b0f;
+      --card:#12121a;
+      --text:#fff;
+      --muted:rgba(255,255,255,.72);
+      --border:rgba(255,255,255,.10);
+      --radius:16px;
     }
     *{ box-sizing:border-box; }
     html,body{ height:100%; margin:0; background:var(--bg); color:var(--text);
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; }
-    .wrap{ height:100%; padding:12px; max-width:1100px; margin:0 auto; display:flex; flex-direction:column; gap:12px; }
-    .head{ background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:12px; }
-    .title{ margin:0 0 6px; font-weight:900; font-size:18px; }
-    .sub{ margin:0; color:var(--muted); font-size:13px; line-height:1.35; }
 
-    .grid{ flex:1; min-height:0; display:grid; grid-template-columns:1fr; gap:12px; }
-    @media (min-width: 900px){ .grid{ grid-template-columns: 1fr 1.2fr; } }
+    .wrap{
+      max-width:1100px;
+      margin:0 auto;
+      padding:12px;
+      display:grid;
+      gap:12px;
+      grid-template-columns:1fr;
+    }
+    @media (min-width: 900px){
+      .wrap{ grid-template-columns:1fr 1.2fr; }
+    }
 
-    .box{ background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:12px; overflow:hidden; min-height:260px; }
-    .boxTitle{ font-weight:800; margin-bottom:10px; }
-    .hint{ margin-top:10px; color:var(--muted); font-size:12px; line-height:1.35; }
-
-    /* чтобы плеер не растягивался на полэкрана */
-    .playerWrap{ min-height:120px; }
-    /* чат сделаем повыше */
-    .chatWrap{ height:520px; }
+    .box{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:12px;
+      overflow:hidden;
+    }
+    .title{
+      margin:0 0 10px 0;
+      font-weight:900;
+      font-size:16px;
+      letter-spacing:.2px;
+    }
+    .hint{
+      margin-top:10px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.35;
+    }
+    a{ color:#fff; text-decoration:underline; }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <div class="head">
-      <p class="title">ПыЛь_ДоРоГ FM</p>
-      <p class="sub">Плеер (с громкостью) + чат Volnorez на одной странице, без iframe.</p>
-    </div>
+    <!-- ПЛЕЕР -->
+    <div class="box">
+      <p class="title">Плеер</p>
 
-    <div class="grid">
-      <!-- ПЛЕЕР -->
-      <div class="box">
-        <div class="boxTitle">Плеер</div>
-
-        <div class="playerWrap">
-          <div id="vplayer001e157d">
-            <a href="https://volnorez.com/pyl_dorog-fm" title="радио ПыЛь_ДоРоГ FM">радио ПыЛь_ДоРоГ FM</a>
-            <script async type="text/javascript"
-              src="https://volnorez.com/plugins/jscode/player_js/001e157d/%7B%22autoplay%22%3Atrue%2C%22share%22%3A%22source%22%2C%22skin%22%3A%22skin3%22%2C%22style%22%3A%7B%7D%7D">
-            </script>
-          </div>
-        </div>
-
-        <div class="hint">Если autoplay не стартует — нажмите Play (браузеры часто блокируют автозапуск).</div>
+      <!-- Официальный JS-Code плеера Volnorez -->
+      <div id="volnorez_live_player" style="width:100%;height:60px;display:block;">
+        Слушать <a href="https://volnorez.com/pyl_dorog-fm" title="радио ПыЛь_ДоРоГ FM">радио ПыЛь_ДоРоГ FM</a>
+        <script>
+          // Ваш ID из JS-Code (у вас: 001e157d)
+          var jscode_player_id = "001e157d";
+        </script>
+        <script src="https://volnorez.com/application/maxsite/plugins/jscode/js/jscode_player.js"></script>
       </div>
 
-      <!-- ЧАТ -->
-      <div class="box">
-        <div class="boxTitle">Чат</div>
+      <div class="hint">
+        Если автозапуск не сработал — нажмите Play (браузеры часто блокируют autoplay).
+      </div>
+    </div>
 
-        <div id="volnorez_chat" class="chatWrap" style="display:block;">
-          Чат «<a href="https://volnorez.com/pyl_dorog-fm" target="_blank" rel="noopener" style="color:#fff;text-decoration:underline;">ПыЛь_ДоРоГ FM</a>»
-          <script>
-            // ВАЖНО: пробуем использовать тот же jscode id, что и у плеера (001e157d)
-            var jscode_chat_id = "001e157d";
-          </script>
-          <script src="https://volnorez.com/application/maxsite/plugins/jscode/js/jscode_chat.js"></script>
-        </div>
+    <!-- ЧАТ -->
+    <div class="box">
+      <p class="title">Чат</p>
 
-        <div class="hint">
-          Если чат не появился: откройте Volnorez → настройки станции → «Ссылка и JS-Code» и возьмите оттуда именно “код чата”.
-        </div>
+      <!-- Официальный JS-Code чата Volnorez -->
+      <div id="volnorez_chat" style="width:100%;height:520px;display:block;">
+        Радио «<a href="https://volnorez.com/pyl_dorog-fm" title="слушать радио онлайн ПыЛь_ДоРоГ FM">ПыЛь_ДоРоГ FM</a>»
+        <script>
+          // Обычно chat_id = тот же, что и в “Ссылка и JS-Code”.
+          // Пробуем тот же ID: 001e157d (как у плеера).
+          var jscode_chat_id = "001e157d";
+        </script>
+        <script src="https://volnorez.com/application/maxsite/plugins/jscode/js/jscode_chat.js"></script>
+      </div>
+
+      <div class="hint">
+        Если чат не появился: откройте Volnorez → Настройки станции → «Ссылка и JS-Code» и скопируйте именно “код чата”.
       </div>
     </div>
   </div>

@@ -5,14 +5,11 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>ПыЛь_ДоРоГ FM — радио и чат</title>
 
-  <!-- КЛЮЧ: чтобы /plugins/... и /static/... брались с volnorez.com -->
-  <base href="https://volnorez.com/">
-
   <style>
     body{
       margin:0;
       background:#e6e6e6;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
     }
     .shell{
       max-width:980px;
@@ -23,9 +20,19 @@
       overflow:hidden;
       box-shadow:0 10px 30px rgba(0,0,0,.15);
     }
-    .player{ padding:10px; background:#ededed; }
-    .divider{ height:1px; background:#b9b9b9; box-shadow:0 1px 0 #ffffff inset; }
-    .chatWrap{ padding:6px; background:#dcdcdc; }
+    .player{
+      padding:10px;
+      background:#ededed;
+    }
+    .divider{
+      height:1px;
+      background:#b9b9b9;
+      box-shadow:0 1px 0 #ffffff inset;
+    }
+    .chatWrap{
+      padding:6px;
+      background:#dcdcdc;
+    }
     .chatFrame{
       height:560px;
       background:#fff;
@@ -36,24 +43,43 @@
       padding:6px;
       overflow:hidden;
     }
-    #volnorez_chat{ width:100%; height:100%; display:block; }
+    .chatMask{
+      width:100%;
+      height:100%;
+      overflow:hidden;
+      background:#fff;
+    }
+    .chatMask iframe{
+      width:100%;
+      height:680px;     /* 560 + crop */
+      border:0;
+      position:relative;
+      top:-120px;       /* обрезаем лишнюю шапку mobile */
+      background:#fff;
+    }
   </style>
 </head>
 
 <body>
-  <!-- VK init (не мешает, иногда помогает VK) -->
   <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
   <script>
-    (async () => { try { await vkBridge.send('VKWebAppInit'); } catch(e) {} })();
+    (async () => {
+      try {
+        if (window.vkBridge && vkBridge.send) {
+          await vkBridge.send('VKWebAppInit');
+        }
+      } catch(e) {}
+    })();
   </script>
 
   <div class="shell">
-    <!-- ПЛЕЕР (серый skin2 как у тебя) -->
+
+    <!-- ПЛЕЕР: твой дизайн полностью -->
     <div class="player">
       <div id="vplayer001e157d">
         <a href="https://volnorez.com/pyl_dorog-fm" title="радио ПыЛь_ДоРоГ FM">радио ПыЛь_ДоРоГ FM</a>
         <script async type="text/javascript"
-          src="https://volnorez.com/plugins/jscode/player_js/001e157d/%7B%22autoplay%22%3Atrue%2C%22share%22%3A%22source%22%2C%22skin%22%3A%22skin2%22%2C%22style%22%3A%7B%22bg_clr%22%3A%22237%2C237%2C237%22%2C%22b_clr%22%3A%22179%2C179%2C179%22%2C%22icon_clr%22%3A%2266%2C66%2C66%22%2C%22ch%22%3A%2237%22%2C%22bg_clr1%22%3A%22243%2C243%2C243%22%2C%22bg_clr2%22%3A%22196%2C196%2C196%22%2C%22bg_clr3%22%3A%22183%2C183%2C183%22%2C%22bg_clr4%22%3A%22167%2C167%2C167%22%2C%22txt_clr%22%3A%22205%2C209%2C205%22%7D%7D">
+          src="https://volnorez.com/plugins/jscode/player_js/001e157d/%7B%22autoplay%22%3Atrue%2C%22share%22%3A%22source%22%2C%22skin%22%3A%22skin3%22%2C%22style%22%3A%7B%7D%7D">
         </script>
       </div>
     </div>
@@ -63,32 +89,17 @@
     <!-- ЧАТ -->
     <div class="chatWrap">
       <div class="chatFrame">
-        <div id="volnorez_chat"
-             data-code="001e157d"
-             data-skin="skin_4"
-             data-skin-params="'bg_clr':'222,222,222','panel_clr':'216,216,216','ib_clr':'250,250,250','msgbg_clr':'238,238,238','omsgbg_clr':'229,229,229','txt_clr':'18,18,18','b_clr':'145,145,145','icon_clr':'120,120,120','label_clr':'60,61,61','dj_clr':'63,191,7'">
+        <div class="chatMask">
+          <iframe
+            src="https://m.volnorez.com/pyl_dorog-fm"
+            allow="autoplay; clipboard-write"
+            referrerpolicy="no-referrer-when-downgrade"
+            title="Чат Volnorez">
+          </iframe>
         </div>
-
-        <script src="https://volnorez.com/plugins/jscode/chat_js"></script>
       </div>
     </div>
-  </div>
 
-  <script>
-    // Дублирующая защита: если виджет всё равно создаёт src="/plugins/..." — перепишем на volnorez.com
-    function fixVolnorezAssetUrls(root = document) {
-      const prefix = 'https://volnorez.com';
-      const nodes = root.querySelectorAll('img, video, source');
-      nodes.forEach(n => {
-        const attr = n.tagName === 'SOURCE' ? 'src' : (n.tagName === 'VIDEO' ? 'src' : 'src');
-        const v = n.getAttribute(attr);
-        if (!v) return;
-        if (v.startsWith('/plugins/') || v.startsWith('/static/') || v.startsWith('/application/')) {
-          n.setAttribute(attr, prefix + v);
-        }
-      });
-    }
-    setTimeout(() => fixVolnorezAssetUrls(), 2500);
-  </script>
+  </div>
 </body>
 </html>

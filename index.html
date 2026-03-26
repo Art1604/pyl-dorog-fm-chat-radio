@@ -3,31 +3,91 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>ПыЛь_ДоРоГ FM — радио и чат</title>
+  <title>ПыЛь_ДоРоГ FM — радио + чат</title>
+
   <style>
-    :root{--bg:#0b0b0f;--card:#12121a;--text:#fff;--muted:rgba(255,255,255,.72);
-      --border:rgba(255,255,255,.10);--radius:16px;--chatH:560px;}
-    *{box-sizing:border-box}
-    html,body{margin:0;background:var(--bg);color:var(--text);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
-    .wrap{max-width:1100px;margin:0 auto;padding:12px;display:grid;gap:12px;grid-template-columns:1fr}
-    @media (min-width:900px){.wrap{grid-template-columns:1fr 1.2fr}}
-    .box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px;overflow:hidden}
-    .title{margin:0 0 10px;font-weight:900;font-size:16px}
-    .hint{margin-top:10px;font-size:12px;color:var(--muted);line-height:1.35}
-    .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .btn{border:1px solid var(--border);background:rgba(255,255,255,.08);color:var(--text);
-      padding:9px 12px;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;text-decoration:none}
-    .vol{display:flex;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--border);
-      border-radius:12px;background:rgba(255,255,255,.06)}
-    input[type="range"]{width:170px}
-    #volnorez_chat{width:100%;height:var(--chatH);display:block;}
-    a{color:#fff;text-decoration:underline}
+    :root{
+      --bg:#0b0b0f; --card:#12121a; --text:#fff; --muted:rgba(255,255,255,.72);
+      --border:rgba(255,255,255,.10); --radius:16px;
+
+      --chatH:560px;     /* высота чата */
+      --cropTop:110px;   /* обрезка шапки мобильного чата (fallback) */
+    }
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; margin:0; background:var(--bg); color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; }
+
+    .wrap{
+      height:100%;
+      max-width:900px;
+      margin:0 auto;
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      min-height:0;
+    }
+
+    .box{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:12px;
+      overflow:hidden;
+    }
+    .title{ margin:0 0 10px; font-weight:900; font-size:16px; }
+    .hint{ margin-top:10px; font-size:12px; color:var(--muted); line-height:1.35; }
+
+    /* Радио */
+    .controls{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .btn{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.08);
+      color:var(--text);
+      padding:9px 12px;
+      border-radius:12px;
+      font-weight:900;
+      font-size:13px;
+      cursor:pointer;
+      text-decoration:none;
+    }
+    .btn:active{ transform:translateY(1px); }
+    .vol{
+      display:flex; gap:10px; align-items:center;
+      padding:8px 10px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:rgba(255,255,255,.06);
+    }
+    input[type="range"]{ width:170px; }
+
+    /* Чат */
+    .chatBox{ flex:1; min-height:0; }
+    #volnorez_chat{ width:100%; height:var(--chatH); display:block; }
+    .chatFallback{
+      display:none;
+      height:var(--chatH);
+      overflow:hidden;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:#000;
+      margin-top:10px;
+    }
+    .chatFallback iframe{
+      width:100%;
+      height: calc(var(--chatH) + var(--cropTop) + 400px);
+      border:0;
+      position:relative;
+      top: calc(var(--cropTop) * -1);
+      background:#000;
+    }
   </style>
 </head>
+
 <body>
   <div class="wrap">
-    <!-- РАДИО (прямой поток) -->
+
+    <!-- РАДИО -->
     <div class="box">
       <p class="title">Радио</p>
 
@@ -39,7 +99,7 @@
         <button class="btn" id="stop">⏹️ Stop</button>
 
         <div class="vol">
-          <span style="font-weight:800;font-size:13px">Громкость</span>
+          <span style="font-weight:900;font-size:13px">Громкость</span>
           <input id="volume" type="range" min="0" max="1" step="0.01" value="1" />
         </div>
 
@@ -49,27 +109,40 @@
       <div class="hint" id="status">Нажмите Play (autoplay в VK часто блокируется).</div>
     </div>
 
-    <!-- ЧАТ (виджет Volnorez) -->
-    <div class="box">
+    <!-- ЧАТ -->
+    <div class="box chatBox">
       <p class="title">Чат</p>
 
+      <!-- основной вариант: JS-виджет Volnorez -->
       <div id="volnorez_chat">
-        Радио «<a href="https://volnorez.com/pyl_dorog-fm" title="ПыЛь_ДоРоГ FM">ПыЛь_ДоРоГ FM</a>»
+        Радио «<a class="btn" style="padding:6px 10px" href="https://volnorez.com/pyl_dorog-fm/" target="_blank" rel="noopener">ПыЛь_ДоРоГ FM</a>»
         <script>var jscode_chat_id="001e157d";</script>
         <script src="https://volnorez.com/application/maxsite/plugins/jscode/js/jscode_chat.js"></script>
       </div>
 
-      <div class="hint">
-        Если чат не появился — пришлите “JS-Code чата” из Volnorez (Настройки → «Ссылка и JS-Code»), я подставлю правильный id.
+      <!-- запасной вариант: мобильная страница -->
+      <div class="chatFallback" id="chatFallback">
+        <iframe
+          src="https://m.volnorez.com/pyl_dorog-fm"
+          allow="autoplay; clipboard-write"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Чат Volnorez (mobile)">
+        </iframe>
+      </div>
+
+      <div class="hint" id="chatHint">
+        Если виджет чата не загрузится — включится запасной вариант (мобильный чат).
       </div>
     </div>
+
   </div>
 
   <script>
-    const STREAM_URL = 'https://stream.volnorez.com/live-app/869683?br=192'; // :contentReference[oaicite:3]{index=3}
+    // Радио (прямой поток)
+    const STREAM_URL = 'https://stream.volnorez.com/live-app/869683?br=192';
     const audio = document.getElementById('audio');
     const statusEl = document.getElementById('status');
-    const setStatus = (t)=> statusEl.textContent = t;
+    const setStatus = (t)=> statusEl.textContent = t || '';
 
     document.getElementById('volume').addEventListener('input', (e)=> audio.volume = Number(e.target.value));
 
@@ -83,10 +156,23 @@
       }
     };
     document.getElementById('pause').onclick = () => { audio.pause(); setStatus('Пауза.'); };
-    document.getElementById('stop').onclick = () => {
-      audio.pause(); audio.removeAttribute('src'); audio.load(); setStatus('Остановлено.');
-    };
+    document.getElementById('stop').onclick = () => { audio.pause(); audio.removeAttribute('src'); audio.load(); setStatus('Остановлено.'); };
     audio.addEventListener('error', ()=> setStatus('Ошибка потока (ссылка могла измениться).'));
+
+    // Чат: если виджет пустой — показываем fallback
+    setTimeout(() => {
+      const chatRoot = document.getElementById('volnorez_chat');
+      const fallback = document.getElementById('chatFallback');
+      const hint = document.getElementById('chatHint');
+
+      // Если виджет не вставил UI, часто остаётся почти пустой текст
+      const tooShort = chatRoot.innerText.replace(/\s+/g,' ').trim().length < 40;
+
+      if (tooShort) {
+        fallback.style.display = 'block';
+        hint.textContent = 'Виджет чата не загрузился в VK — включён мобильный чат (fallback). Если сверху видно лишнее, увеличьте --cropTop.';
+      }
+    }, 2500);
   </script>
 </body>
 </html>

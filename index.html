@@ -3,96 +3,90 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>ПыЛь_ДоРоГ FM — плеер и чат</title>
-
+  <title>ПыЛь_ДоРоГ FM — радио и чат</title>
   <style>
-    :root{
-      --bg:#0b0b0f;
-      --card:#12121a;
-      --text:#fff;
-      --muted:rgba(255,255,255,.72);
-      --border:rgba(255,255,255,.10);
-      --radius:16px;
-    }
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; margin:0; background:var(--bg); color:var(--text);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; }
-
-    .wrap{
-      max-width:1100px;
-      margin:0 auto;
-      padding:12px;
-      display:grid;
-      gap:12px;
-      grid-template-columns:1fr;
-    }
-    @media (min-width: 900px){
-      .wrap{ grid-template-columns:1fr 1.2fr; }
-    }
-
-    .box{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      padding:12px;
-      overflow:hidden;
-    }
-    .title{
-      margin:0 0 10px 0;
-      font-weight:900;
-      font-size:16px;
-      letter-spacing:.2px;
-    }
-    .hint{
-      margin-top:10px;
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.35;
-    }
-    a{ color:#fff; text-decoration:underline; }
+    :root{--bg:#0b0b0f;--card:#12121a;--text:#fff;--muted:rgba(255,255,255,.72);
+      --border:rgba(255,255,255,.10);--radius:16px;--chatH:560px;}
+    *{box-sizing:border-box}
+    html,body{margin:0;background:var(--bg);color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
+    .wrap{max-width:1100px;margin:0 auto;padding:12px;display:grid;gap:12px;grid-template-columns:1fr}
+    @media (min-width:900px){.wrap{grid-template-columns:1fr 1.2fr}}
+    .box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px;overflow:hidden}
+    .title{margin:0 0 10px;font-weight:900;font-size:16px}
+    .hint{margin-top:10px;font-size:12px;color:var(--muted);line-height:1.35}
+    .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .btn{border:1px solid var(--border);background:rgba(255,255,255,.08);color:var(--text);
+      padding:9px 12px;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;text-decoration:none}
+    .vol{display:flex;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--border);
+      border-radius:12px;background:rgba(255,255,255,.06)}
+    input[type="range"]{width:170px}
+    #volnorez_chat{width:100%;height:var(--chatH);display:block;}
+    a{color:#fff;text-decoration:underline}
   </style>
 </head>
-
 <body>
   <div class="wrap">
-    <!-- ПЛЕЕР -->
+    <!-- РАДИО (прямой поток) -->
     <div class="box">
-      <p class="title">Плеер</p>
+      <p class="title">Радио</p>
 
-      <!-- Официальный JS-Code плеера Volnorez -->
-      <div id="volnorez_live_player" style="width:100%;height:60px;display:block;">
-        Слушать <a href="https://volnorez.com/pyl_dorog-fm" title="радио ПыЛь_ДоРоГ FM">радио ПыЛь_ДоРоГ FM</a>
-        <script>
-          // Ваш ID из JS-Code (у вас: 001e157d)
-          var jscode_player_id = "001e157d";
-        </script>
-        <script src="https://volnorez.com/application/maxsite/plugins/jscode/js/jscode_player.js"></script>
+      <audio id="audio" preload="none" playsinline></audio>
+
+      <div class="controls">
+        <button class="btn" id="play">▶️ Play</button>
+        <button class="btn" id="pause">⏸️ Pause</button>
+        <button class="btn" id="stop">⏹️ Stop</button>
+
+        <div class="vol">
+          <span style="font-weight:800;font-size:13px">Громкость</span>
+          <input id="volume" type="range" min="0" max="1" step="0.01" value="1" />
+        </div>
+
+        <a class="btn" href="https://volnorez.com/pyl_dorog-fm/" target="_blank" rel="noopener">🌐 Станция</a>
       </div>
 
-      <div class="hint">
-        Если автозапуск не сработал — нажмите Play (браузеры часто блокируют autoplay).
-      </div>
+      <div class="hint" id="status">Нажмите Play (autoplay в VK часто блокируется).</div>
     </div>
 
-    <!-- ЧАТ -->
+    <!-- ЧАТ (виджет Volnorez) -->
     <div class="box">
       <p class="title">Чат</p>
 
-      <!-- Официальный JS-Code чата Volnorez -->
-      <div id="volnorez_chat" style="width:100%;height:520px;display:block;">
-        Радио «<a href="https://volnorez.com/pyl_dorog-fm" title="слушать радио онлайн ПыЛь_ДоРоГ FM">ПыЛь_ДоРоГ FM</a>»
-        <script>
-          // Обычно chat_id = тот же, что и в “Ссылка и JS-Code”.
-          // Пробуем тот же ID: 001e157d (как у плеера).
-          var jscode_chat_id = "001e157d";
-        </script>
+      <div id="volnorez_chat">
+        Радио «<a href="https://volnorez.com/pyl_dorog-fm" title="ПыЛь_ДоРоГ FM">ПыЛь_ДоРоГ FM</a>»
+        <script>var jscode_chat_id="001e157d";</script>
         <script src="https://volnorez.com/application/maxsite/plugins/jscode/js/jscode_chat.js"></script>
       </div>
 
       <div class="hint">
-        Если чат не появился: откройте Volnorez → Настройки станции → «Ссылка и JS-Code» и скопируйте именно “код чата”.
+        Если чат не появился — пришлите “JS-Code чата” из Volnorez (Настройки → «Ссылка и JS-Code»), я подставлю правильный id.
       </div>
     </div>
   </div>
+
+  <script>
+    const STREAM_URL = 'https://stream.volnorez.com/live-app/869683?br=192'; // :contentReference[oaicite:3]{index=3}
+    const audio = document.getElementById('audio');
+    const statusEl = document.getElementById('status');
+    const setStatus = (t)=> statusEl.textContent = t;
+
+    document.getElementById('volume').addEventListener('input', (e)=> audio.volume = Number(e.target.value));
+
+    document.getElementById('play').onclick = async () => {
+      try {
+        if (!audio.src) audio.src = STREAM_URL;
+        await audio.play();
+        setStatus('Играет ✅');
+      } catch (e) {
+        setStatus('Не удалось запустить. Нажмите Play ещё раз.');
+      }
+    };
+    document.getElementById('pause').onclick = () => { audio.pause(); setStatus('Пауза.'); };
+    document.getElementById('stop').onclick = () => {
+      audio.pause(); audio.removeAttribute('src'); audio.load(); setStatus('Остановлено.');
+    };
+    audio.addEventListener('error', ()=> setStatus('Ошибка потока (ссылка могла измениться).'));
+  </script>
 </body>
 </html>

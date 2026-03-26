@@ -25,7 +25,7 @@
       background:#ededed;
     }
 
-    /* ЛИНИЯ между плеером и чатом */
+    /* линия между плеером и чатом */
     .divider{
       height:1px;
       background:#b9b9b9;
@@ -37,7 +37,7 @@
       background:#dcdcdc;
     }
     .chatFrame{
-      height:560px;               /* высота чата */
+      height:560px;
       background:#fff;
       border-top:1px solid #fff;
       border-left:1px solid #fff;
@@ -45,19 +45,30 @@
       border-bottom:1px solid #8f8f8f;
       padding:6px;
       overflow:hidden;
+      position:relative;
     }
 
-    /* контейнер Volnorez-чата */
-    #volnorez_chat{
-      width:100%;
-      height:100%;
-      display:block;
+    /* контейнер чата */
+    #volnorez_chat{ width:100%; height:100%; display:block; }
+
+    /* сообщение, если чат не загрузился */
+    .chatFail{
+      display:none;
+      position:absolute;
+      left:6px; right:6px; bottom:6px;
+      padding:10px;
+      background:#fff3cd;
+      border:1px solid #ffeeba;
+      border-radius:8px;
+      font-size:12px;
+      color:#333;
     }
+    .chatFail a{ color:#111; }
   </style>
 </head>
 
 <body>
-  <!-- Ранний VK init (чтобы VK не писал “Приложение не инициализировано…”) -->
+  <!-- VK init (чтобы VK не ругался “Приложение не инициализировано…”) -->
   <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
   <script>
     (async () => { try { await vkBridge.send('VKWebAppInit'); } catch(e) {} })();
@@ -65,12 +76,12 @@
 
   <div class="shell">
 
-    <!-- ПЛЕЕР (твой дизайн) -->
+    <!-- ПЛЕЕР (skin3) — твой полностью -->
     <div class="player">
       <div id="vplayer001e157d">
         <a href="https://volnorez.com/pyl_dorog-fm" title="радио ПыЛь_ДоРоГ FM">радио ПыЛь_ДоРоГ FM</a>
         <script async type="text/javascript"
-          src="https://volnorez.com/plugins/jscode/player_js/001e157d/%7B%22share%22%3A%22source%22%2C%22skin%22%3A%22main%22%2C%22style%22%3A%7B%7D%7D">
+          src="https://volnorez.com/plugins/jscode/player_js/001e157d/%7B%22autoplay%22%3Atrue%2C%22share%22%3A%22source%22%2C%22skin%22%3A%22skin3%22%2C%22style%22%3A%7B%7D%7D">
         </script>
       </div>
     </div>
@@ -78,22 +89,42 @@
     <!-- ЛИНИЯ -->
     <div class="divider"></div>
 
-    <!-- ЧАТ (классический “серый”, со списком пользователей и смайлами/мемами) -->
+    <!-- ЧАТ (классический серый со списком людей) -->
     <div class="chatWrap">
       <div class="chatFrame">
 
+        <!-- ВАЖНО: data-code = 001e157d (как у твоего плеера) -->
         <div id="volnorez_chat"
-          data-code="001e157d"
-          data-skin="skin_4"
-          data-skin-params="'bg_clr':'222,222,222','panel_clr':'216,216,216','ib_clr':'250,250,250','msgbg_clr':'238,238,238','omsgbg_clr':'229,229,229','txt_clr':'18,18,18','b_clr':'145,145,145','icon_clr':'120,120,120','label_clr':'60,61,61','dj_clr':'63,191,7'">
+             data-code="001e157d"
+             data-skin="skin_4"
+             data-skin-params="'bg_clr':'222,222,222','panel_clr':'216,216,216','ib_clr':'250,250,250','msgbg_clr':'238,238,238','omsgbg_clr':'229,229,229','txt_clr':'18,18,18','b_clr':'145,145,145','icon_clr':'120,120,120','label_clr':'60,61,61','dj_clr':'63,191,7'">
         </div>
 
-        <!-- подключаем рендер чата -->
-        <script async src="https://volnorez.com/plugins/jscode/chat_js"></script>
+        <!-- Скрипт рендера чата -->
+        <script src="https://volnorez.com/plugins/jscode/chat_js"></script>
 
+        <div class="chatFail" id="chatFail">
+          Чат не загрузился. Открой чат на сайте:
+          <a href="https://volnorez.com/pyl_dorog-fm/#chat_widget" target="_blank" rel="noopener">
+            volnorez.com/pyl_dorog-fm/#chat_widget
+          </a>
+        </div>
       </div>
     </div>
 
   </div>
+
+  <script>
+    // Если за 4 секунды чат не нарисовался — покажем подсказку
+    setTimeout(() => {
+      const root = document.getElementById('volnorez_chat');
+      const fail = document.getElementById('chatFail');
+
+      // Если внутри совсем пусто — считаем, что не загрузилось
+      if (!root || root.children.length === 0) {
+        fail.style.display = 'block';
+      }
+    }, 4000);
+  </script>
 </body>
 </html>

@@ -6,56 +6,171 @@
   <title>ПыЛь_ДоРоГ FM — радио и чат</title>
 
   <style>
-    body{
-      margin:0;
-      background:#e6e6e6;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    :root{
+      --bg:#dcdcdc;
+      --shell:#efefef;
+      --panel:#f7f7f7;
+      --line1:#ffffff;
+      --line2:#b7b7b7;
+      --line3:#8f8f8f;
+      --text:#1b1b1b;
+      --muted:#555;
+      --btn:#e3e3e3;
+      --btn-hover:#d8d8d8;
+      --radius:8px;
     }
+
+    *{ box-sizing:border-box; }
+
+    html,body{
+      margin:0;
+      background:var(--bg);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--text);
+    }
+
     .shell{
       max-width:980px;
       margin:12px auto;
-      background:#f4f4f4;
-      border:1px solid #8f8f8f;
-      border-radius:8px;
+      background:var(--shell);
+      border:1px solid var(--line3);
+      border-radius:var(--radius);
       overflow:hidden;
-      box-shadow:0 10px 30px rgba(0,0,0,.15);
+      box-shadow:0 10px 30px rgba(0,0,0,.12);
     }
+
     .player{
-      padding:10px;
+      padding:12px;
       background:#ededed;
     }
+
     .divider{
       height:1px;
-      background:#b9b9b9;
-      box-shadow:0 1px 0 #ffffff inset;
+      background:var(--line2);
+      box-shadow:0 1px 0 var(--line1) inset;
     }
+
     .chatWrap{
       padding:6px;
-      background:#dcdcdc;
+      background:#d6d6d6;
     }
+
     .chatFrame{
       height:560px;
       background:#fff;
-      border-top:1px solid #fff;
-      border-left:1px solid #fff;
-      border-right:1px solid #8f8f8f;
-      border-bottom:1px solid #8f8f8f;
+      border-top:1px solid var(--line1);
+      border-left:1px solid var(--line1);
+      border-right:1px solid var(--line3);
+      border-bottom:1px solid var(--line3);
       padding:6px;
       overflow:hidden;
     }
+
+    .title{
+      margin:0 0 10px;
+      font-size:16px;
+      font-weight:800;
+      color:#2a2a2a;
+    }
+
+    .radioBox{
+      background:var(--panel);
+      border-top:1px solid var(--line1);
+      border-left:1px solid var(--line1);
+      border-right:1px solid var(--line3);
+      border-bottom:1px solid var(--line3);
+      border-radius:6px;
+      padding:12px;
+    }
+
+    .station{
+      font-size:18px;
+      font-weight:800;
+      margin-bottom:8px;
+    }
+
+    .sub{
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:12px;
+      word-break:break-word;
+    }
+
+    .controls{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+    }
+
+    .btn{
+      border:1px solid #9c9c9c;
+      background:var(--btn);
+      color:var(--text);
+      padding:8px 12px;
+      border-radius:6px;
+      font-size:13px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .btn:hover{
+      background:var(--btn-hover);
+    }
+
+    .btn:active{
+      transform:translateY(1px);
+    }
+
+    .volume{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 10px;
+      border:1px solid #b2b2b2;
+      background:#ececec;
+      border-radius:6px;
+    }
+
+    .volume label{
+      font-size:13px;
+      font-weight:700;
+      color:#333;
+    }
+
+    input[type="range"]{
+      width:180px;
+      accent-color:#7f7f7f;
+    }
+
+    .status{
+      margin-top:10px;
+      font-size:12px;
+      color:var(--muted);
+    }
+
     .chatMask{
       width:100%;
       height:100%;
       overflow:hidden;
       background:#fff;
+      position:relative;
     }
+
     .chatMask iframe{
       width:100%;
-      height:680px;     /* 560 + crop */
+      height:700px;
       border:0;
       position:relative;
-      top:-120px;       /* обрезаем лишнюю шапку mobile */
+      top:-120px;
       background:#fff;
+    }
+
+    @media (max-width:700px){
+      .shell{ margin:0; border-radius:0; }
+      .chatFrame{ height:520px; }
+      .chatMask iframe{ top:-100px; }
+      input[type="range"]{ width:130px; }
     }
   </style>
 </head>
@@ -74,13 +189,30 @@
 
   <div class="shell">
 
-    <!-- ПЛЕЕР: твой дизайн полностью -->
+    <!-- СЕРЫЙ ПЛЕЕР -->
     <div class="player">
-      <div id="vplayer001e157d">
-        <a href="https://volnorez.com/pyl_dorog-fm" title="радио ПыЛь_ДоРоГ FM">радио ПыЛь_ДоРоГ FM</a>
-        <script async type="text/javascript"
-          src="https://volnorez.com/plugins/jscode/player_js/001e157d/%7B%22autoplay%22%3Atrue%2C%22share%22%3A%22source%22%2C%22skin%22%3A%22skin3%22%2C%22style%22%3A%7B%7D%7D">
-        </script>
+      <div class="title">ПыЛь_ДоРоГ FM — Радио</div>
+
+      <div class="radioBox">
+        <div class="station">ПыЛь_ДоРоГ FM</div>
+        <div class="sub">Поток 192 kbps • встроенный серый плеер</div>
+
+        <audio id="audio" preload="none" playsinline></audio>
+
+        <div class="controls">
+          <button class="btn" id="playBtn">▶ Play</button>
+          <button class="btn" id="pauseBtn">⏸ Pause</button>
+          <button class="btn" id="stopBtn">⏹ Stop</button>
+
+          <div class="volume">
+            <label for="volume">Громкость</label>
+            <input id="volume" type="range" min="0" max="1" step="0.01" value="1">
+          </div>
+
+          <button class="btn" id="openBtn">Открыть станцию</button>
+        </div>
+
+        <div class="status" id="status">Нажмите Play для запуска эфира.</div>
       </div>
     </div>
 
@@ -101,5 +233,60 @@
     </div>
 
   </div>
+
+  <script>
+    const STREAM_URL = 'https://stream.volnorez.com/live-app/869683?br=192';
+    const STATION_URL = 'https://volnorez.com/pyl_dorog-fm/';
+
+    const audio = document.getElementById('audio');
+    const statusEl = document.getElementById('status');
+    const volumeEl = document.getElementById('volume');
+
+    function setStatus(text){
+      statusEl.textContent = text;
+    }
+
+    volumeEl.addEventListener('input', () => {
+      audio.volume = Number(volumeEl.value);
+    });
+
+    document.getElementById('playBtn').addEventListener('click', async () => {
+      try {
+        if (!audio.src) audio.src = STREAM_URL;
+        await audio.play();
+        setStatus('Эфир играет.');
+      } catch (e) {
+        setStatus('Не удалось запустить. Нажмите Play ещё раз.');
+      }
+    });
+
+    document.getElementById('pauseBtn').addEventListener('click', () => {
+      audio.pause();
+      setStatus('Пауза.');
+    });
+
+    document.getElementById('stopBtn').addEventListener('click', () => {
+      audio.pause();
+      audio.removeAttribute('src');
+      audio.load();
+      setStatus('Остановлено.');
+    });
+
+    document.getElementById('openBtn').addEventListener('click', async () => {
+      try {
+        if (window.vkBridge && vkBridge.send) {
+          await vkBridge.send('VKWebAppOpenURL', { url: STATION_URL });
+        } else {
+          window.open(STATION_URL, '_blank', 'noopener');
+        }
+      } catch (e) {
+        window.open(STATION_URL, '_blank', 'noopener');
+      }
+    });
+
+    audio.addEventListener('error', () => {
+      setStatus('Ошибка потока. Возможно, ссылка изменилась.');
+    });
+  </script>
 </body>
 </html>

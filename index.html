@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>ПыЛь_ДоРоГ FM — радио и чат</title>
 
+  <!-- КЛЮЧ: чтобы /plugins/... и /static/... брались с volnorez.com -->
+  <base href="https://volnorez.com/">
+
   <style>
     body{
       margin:0;
@@ -20,22 +23,9 @@
       overflow:hidden;
       box-shadow:0 10px 30px rgba(0,0,0,.15);
     }
-    .player{
-      padding:10px;
-      background:#ededed;
-    }
-
-    /* линия между плеером и чатом */
-    .divider{
-      height:1px;
-      background:#b9b9b9;
-      box-shadow:0 1px 0 #ffffff inset;
-    }
-
-    .chatWrap{
-      padding:6px;
-      background:#dcdcdc;
-    }
+    .player{ padding:10px; background:#ededed; }
+    .divider{ height:1px; background:#b9b9b9; box-shadow:0 1px 0 #ffffff inset; }
+    .chatWrap{ padding:6px; background:#dcdcdc; }
     .chatFrame{
       height:560px;
       background:#fff;
@@ -45,86 +35,60 @@
       border-bottom:1px solid #8f8f8f;
       padding:6px;
       overflow:hidden;
-      position:relative;
     }
-
-    /* контейнер чата */
     #volnorez_chat{ width:100%; height:100%; display:block; }
-
-    /* сообщение, если чат не загрузился */
-    .chatFail{
-      display:none;
-      position:absolute;
-      left:6px; right:6px; bottom:6px;
-      padding:10px;
-      background:#fff3cd;
-      border:1px solid #ffeeba;
-      border-radius:8px;
-      font-size:12px;
-      color:#333;
-    }
-    .chatFail a{ color:#111; }
   </style>
 </head>
 
 <body>
-  <!-- VK init (чтобы VK не ругался “Приложение не инициализировано…”) -->
+  <!-- VK init (не мешает, иногда помогает VK) -->
   <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
   <script>
     (async () => { try { await vkBridge.send('VKWebAppInit'); } catch(e) {} })();
   </script>
 
   <div class="shell">
-
-    <!-- ПЛЕЕР (skin3) — твой полностью -->
+    <!-- ПЛЕЕР (серый skin2 как у тебя) -->
     <div class="player">
       <div id="vplayer001e157d">
         <a href="https://volnorez.com/pyl_dorog-fm" title="радио ПыЛь_ДоРоГ FM">радио ПыЛь_ДоРоГ FM</a>
         <script async type="text/javascript"
-          src="https://volnorez.com/plugins/jscode/player_js/001e157d/%7B%22autoplay%22%3Atrue%2C%22share%22%3A%22source%22%2C%22skin%22%3A%22skin3%22%2C%22style%22%3A%7B%7D%7D">
+          src="https://volnorez.com/plugins/jscode/player_js/001e157d/%7B%22autoplay%22%3Atrue%2C%22share%22%3A%22source%22%2C%22skin%22%3A%22skin2%22%2C%22style%22%3A%7B%22bg_clr%22%3A%22237%2C237%2C237%22%2C%22b_clr%22%3A%22179%2C179%2C179%22%2C%22icon_clr%22%3A%2266%2C66%2C66%22%2C%22ch%22%3A%2237%22%2C%22bg_clr1%22%3A%22243%2C243%2C243%22%2C%22bg_clr2%22%3A%22196%2C196%2C196%22%2C%22bg_clr3%22%3A%22183%2C183%2C183%22%2C%22bg_clr4%22%3A%22167%2C167%2C167%22%2C%22txt_clr%22%3A%22205%2C209%2C205%22%7D%7D">
         </script>
       </div>
     </div>
 
-    <!-- ЛИНИЯ -->
     <div class="divider"></div>
 
-    <!-- ЧАТ (классический серый со списком людей) -->
+    <!-- ЧАТ -->
     <div class="chatWrap">
       <div class="chatFrame">
-
-        <!-- ВАЖНО: data-code = 001e157d (как у твоего плеера) -->
         <div id="volnorez_chat"
              data-code="001e157d"
              data-skin="skin_4"
              data-skin-params="'bg_clr':'222,222,222','panel_clr':'216,216,216','ib_clr':'250,250,250','msgbg_clr':'238,238,238','omsgbg_clr':'229,229,229','txt_clr':'18,18,18','b_clr':'145,145,145','icon_clr':'120,120,120','label_clr':'60,61,61','dj_clr':'63,191,7'">
         </div>
 
-        <!-- Скрипт рендера чата -->
         <script src="https://volnorez.com/plugins/jscode/chat_js"></script>
-
-        <div class="chatFail" id="chatFail">
-          Чат не загрузился. Открой чат на сайте:
-          <a href="https://volnorez.com/pyl_dorog-fm/#chat_widget" target="_blank" rel="noopener">
-            volnorez.com/pyl_dorog-fm/#chat_widget
-          </a>
-        </div>
       </div>
     </div>
-
   </div>
 
   <script>
-    // Если за 4 секунды чат не нарисовался — покажем подсказку
-    setTimeout(() => {
-      const root = document.getElementById('volnorez_chat');
-      const fail = document.getElementById('chatFail');
-
-      // Если внутри совсем пусто — считаем, что не загрузилось
-      if (!root || root.children.length === 0) {
-        fail.style.display = 'block';
-      }
-    }, 4000);
+    // Дублирующая защита: если виджет всё равно создаёт src="/plugins/..." — перепишем на volnorez.com
+    function fixVolnorezAssetUrls(root = document) {
+      const prefix = 'https://volnorez.com';
+      const nodes = root.querySelectorAll('img, video, source');
+      nodes.forEach(n => {
+        const attr = n.tagName === 'SOURCE' ? 'src' : (n.tagName === 'VIDEO' ? 'src' : 'src');
+        const v = n.getAttribute(attr);
+        if (!v) return;
+        if (v.startsWith('/plugins/') || v.startsWith('/static/') || v.startsWith('/application/')) {
+          n.setAttribute(attr, prefix + v);
+        }
+      });
+    }
+    setTimeout(() => fixVolnorezAssetUrls(), 2500);
   </script>
 </body>
 </html>

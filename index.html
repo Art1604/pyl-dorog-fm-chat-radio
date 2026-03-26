@@ -3,41 +3,57 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>ПыЛь_ДоРоГ FM — Радио и чат</title>
+  <title>ПыЛь_ДоРоГ FM — радио и чат</title>
 
   <style>
-    body{margin:0;background:#e6e6e6;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
+    body{
+      margin:0;
+      background:#e6e6e6;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+    }
     .shell{
-      max-width:980px;margin:12px auto;background:#f4f4f4;
-      border:1px solid #8f8f8f;border-radius:8px;overflow:hidden;
+      max-width:980px;
+      margin:12px auto;
+      background:#f4f4f4;
+      border:1px solid #8f8f8f;
+      border-radius:8px;
+      overflow:hidden;
       box-shadow:0 10px 30px rgba(0,0,0,.15);
     }
-    .top{padding:8px 10px;background:linear-gradient(#f9f9f9,#e9e9e9);border-bottom:1px solid #b9b9b9;font-weight:800}
-    .player{padding:10px;border-bottom:1px solid #b9b9b9;background:#ededed}
-    .chatWrap{padding:6px;background:#dcdcdc}
-    .chatFrame{
-      height:560px;background:#fff;
-      border-top:1px solid #fff;border-left:1px solid #fff;
-      border-right:1px solid #8f8f8f;border-bottom:1px solid #8f8f8f;
-      padding:6px;overflow:hidden;
+    .player{
+      padding:10px;
+      background:#ededed;
     }
-    #volnorez_chat{width:100%;height:100%;display:block;}
+
+    /* ЛИНИЯ между плеером и чатом */
+    .divider{
+      height:1px;
+      background:#b9b9b9;
+      box-shadow:0 1px 0 #ffffff inset;
+    }
+
+    .chatWrap{
+      padding:6px;
+      background:#dcdcdc;
+    }
+    .chatFrame{
+      height:560px;
+      background:#fff;
+      border-top:1px solid #fff;
+      border-left:1px solid #fff;
+      border-right:1px solid #8f8f8f;
+      border-bottom:1px solid #8f8f8f;
+      padding:6px;
+      overflow:hidden;
+    }
+    #volnorez_chat{ width:100%; height:100%; display:block; }
   </style>
 </head>
 
 <body>
-  <!-- VK Bridge (не обязательно, но полезно для Mini App) -->
-  <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
-  <script>
-    (async () => {
-      try { await vkBridge.send('VKWebAppInit'); } catch(e) {}
-    })();
-  </script>
-
   <div class="shell">
-    <div class="top">ПыЛь_ДоРоГ FM — Радио и чат</div>
 
-    <!-- ПЛЕЕР -->
+    <!-- ПЛЕЕР (твой дизайн) -->
     <div class="player">
       <div id="vplayer001e157d">
         <a href="https://volnorez.com/pyl_dorog-fm" title="радио ПыЛь_ДоРоГ FM">радио ПыЛь_ДоРоГ FM</a>
@@ -47,19 +63,22 @@
       </div>
     </div>
 
+    <!-- ЛИНИЯ -->
+    <div class="divider"></div>
+
     <!-- ЧАТ -->
     <div class="chatWrap">
       <div class="chatFrame">
         <div id="volnorez_chat">
           Радио «<a href="https://volnorez.com/pyl_dorog-fm" target="_blank" rel="noopener">ПыЛь_ДоРоГ FM</a>»
           <script>
-            // обычно ID чата такой же, как ID плеера (у тебя 001e157d)
             var jscode_chat_id = "001e157d";
           </script>
           <script src="https://volnorez.com/application/maxsite/plugins/jscode/js/jscode_chat.js"></script>
         </div>
       </div>
     </div>
+
   </div>
 </body>
 </html>

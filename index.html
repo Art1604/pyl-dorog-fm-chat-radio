@@ -3,16 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>ПыЛь_ДоРоГ FM — радио + чат</title>
-
-  <!-- ВАЖНО: чтобы /plugins/... грузилось с volnorez.com, а не с github.io -->
-  <base href="https://volnorez.com/">
-
-  <!-- Стили Volnorez для чата (серый чат) -->
-  <link rel="stylesheet" href="https://volnorez.com/plugins/static/css/DEFSTYLE+210a9251db468bbac5030d7cff18a2ed102781.css">
-  <link rel="stylesheet" href="https://volnorez.com/plugins/static/css/KERNEL+afdeabc769767007aea525b952e151b846954.css">
-  <link rel="stylesheet" href="https://volnorez.com/plugins/static/css/WCMEDIA+d0ed70a5ab8c64d2884e8bd9c6bd168e2143.css">
-  <link rel="stylesheet" href="https://volnorez.com/plugins/static/css/NEW_WCHAT+b6058f9a1ad69270355764350d2858291722.css">
+  <title>ПыЛь_ДоРоГ FM — радио и чат</title>
 
   <style>
     :root{
@@ -22,6 +13,9 @@
       --muted:rgba(255,255,255,.72);
       --border:rgba(255,255,255,.10);
       --radius:16px;
+
+      --chatH:560px;     /* высота чата */
+      --cropTop:110px;   /* обрезка шапки мобильной страницы (если мешает) */
     }
     *{ box-sizing:border-box; }
     html,body{
@@ -31,9 +25,10 @@
       color:var(--text);
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
     }
+
     .wrap{
       height:100%;
-      max-width:900px;
+      max-width:980px;
       margin:0 auto;
       padding:12px;
       display:flex;
@@ -41,17 +36,56 @@
       gap:12px;
       min-height:0;
     }
+
+    .head{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:12px;
+    }
+    .title{
+      margin:0 0 6px;
+      font-weight:900;
+      font-size:18px;
+      letter-spacing:.2px;
+    }
+    .sub{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+    }
+
+    .grid{
+      flex:1;
+      min-height:0;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+    }
+    @media (min-width: 900px){
+      .grid{ grid-template-columns: 1fr 1.2fr; }
+    }
+
     .box{
       background:var(--card);
       border:1px solid var(--border);
       border-radius:var(--radius);
       padding:12px;
       overflow:hidden;
+      min-height:260px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
     }
-    .title{ margin:0 0 10px; font-weight:900; font-size:16px; }
-    .hint{ margin-top:10px; font-size:12px; color:var(--muted); line-height:1.35; }
 
-    /* Радио */
+    .boxTitle{
+      font-weight:900;
+      font-size:16px;
+      margin:0;
+    }
+
+    /* Кнопки */
     .controls{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
     .btn{
       border:1px solid var(--border);
@@ -63,10 +97,16 @@
       font-size:13px;
       cursor:pointer;
       text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
     }
     .btn:active{ transform:translateY(1px); }
+
     .vol{
-      display:flex; gap:10px; align-items:center;
+      display:flex;
+      gap:10px;
+      align-items:center;
       padding:8px 10px;
       border:1px solid var(--border);
       border-radius:12px;
@@ -74,95 +114,143 @@
     }
     input[type="range"]{ width:170px; }
 
-    /* Чат: занимает всё оставшееся место */
-    .chatBox{ flex:1; min-height:0; }
-    #chat_widget{
-      height:100%;
-      min-height:420px;
+    .hint{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.35;
     }
 
-    /* чуть приглушим возможные глобальные стили Volnorez на body */
-    body .chat_cont { margin:0 !important; }
+    /* Чат iframe + обрезка шапки */
+    .chatMask{
+      height:var(--chatH);
+      overflow:hidden;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:#000;
+    }
+    .chatMask iframe{
+      width:100%;
+      height: calc(var(--chatH) + var(--cropTop) + 400px);
+      border:0;
+      position:relative;
+      top: calc(var(--cropTop) * -1);
+      background:#000;
+    }
+
+    /* Служебное */
+    .warn{
+      display:none;
+      margin-top:8px;
+      padding:10px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:rgba(255,255,255,.06);
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.35;
+    }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-
-    <!-- РАДИО (прямой поток) -->
-    <div class="box">
-      <p class="title">Радио</p>
-
-      <audio id="audio" preload="none" playsinline></audio>
-
-      <div class="controls">
-        <button class="btn" id="play">▶️ Play</button>
-        <button class="btn" id="pause">⏸️ Pause</button>
-        <button class="btn" id="stop">⏹️ Stop</button>
-
-        <div class="vol">
-          <span style="font-weight:900;font-size:13px">Громкость</span>
-          <input id="volume" type="range" min="0" max="1" step="0.01" value="1" />
-        </div>
-
-        <a class="btn" href="https://volnorez.com/pyl_dorog-fm/" target="_blank" rel="noopener">🌐 Станция</a>
-      </div>
-
-      <div class="hint" id="status">Нажмите Play (autoplay в VK часто блокируется).</div>
-    </div>
-
-    <!-- ЧАТ (серый чат как на сайте) -->
-    <div class="box chatBox">
-      <p class="title">Чат</p>
-
-      <!-- ВАЖНО: эти div читает NEW_WCHAT (wchat_ctrl_Ready) -->
-      <div id="chat_url" style="display:none">wss://s05.volnorez.com:443/chat-app/869683</div>
-      <div id="chat_channel_id" style="display:none">869683</div>
-
-      <!-- ДЛЯ ВСЕХ: оставляем пустым, чтобы чат показывал вход/авторизацию сам -->
-      <div id="chat_user_id" style="display:none"></div>
-
-      <!-- можно оставить пустым или поставить settings -->
-      <div id="chat_usettings_url" style="display:none">https://volnorez.com/users/-aptupchik-/settings</div>
-
-      <!-- Смайлы (нужны NEW_WCHAT). Взято из вашей сохранённой страницы -->
-      <script>
-        var g_aVolnorezSmileys = {"1":{class:"smile_def_01",img:"/plugins/wchat/smileys/stat.png"},"2":{class:"smile_def_02",img:"/plugins/wchat/smileys/stat.png"},"3":{class:"smile_def_03",img:"/plugins/wchat/smileys/stat.png"},"4":{class:"smile_def_04",img:"/plugins/wchat/smileys/stat.png"},"5":{class:"smile_def_05",img:"/plugins/wchat/smileys/stat.png"},"6":{class:"smile_def_06",img:"/plugins/wchat/smileys/stat.png"},"7":{class:"smile_def_07",img:"/plugins/wchat/smileys/stat.png"},"8":{class:"smile_def_08",img:"/plugins/wchat/smileys/stat.png"},"9":{class:"smile_def_09",img:"/plugins/wchat/smileys/stat.png"},"10":{class:"smile_def_10",img:"/plugins/wchat/smileys/stat.png"},"11":{class:"smile_def_11",img:"/plugins/wchat/smileys/stat.png"},"12":{class:"smile_def_12",img:"/plugins/wchat/smileys/stat.png"},"13":{class:"smile_def_13",img:"/plugins/wchat/smileys/stat.png"},"14":{class:"smile_def_14",img:"/plugins/wchat/smileys/stat.png"},"15":{class:"smile_def_15",img:"/plugins/wchat/smileys/stat.png"},"16":{class:"smile_def_16",img:"/plugins/wchat/smileys/stat.png"},"17":{class:"smile_def_17",img:"/plugins/wchat/smileys/stat.png"},"18":{class:"smile_def_18",img:"/plugins/wchat/smileys/stat.png"},"19":{class:"smile_def_19",img:"/plugins/wchat/smileys/stat.png"},"20":{class:"smile_def_20",img:"/plugins/wchat/smileys/stat.png"},"21":{class:"smile_def_21",img:"/plugins/wchat/smileys/stat.png"},"22":{class:"smile_def_22",img:"/plugins/wchat/smileys/stat.png"},"23":{class:"smile_def_23",img:"/plugins/wchat/smileys/stat.png"},"24":{class:"smile_def_24",img:"/plugins/wchat/smileys/stat.png"},"25":{class:"smile_def_25",img:"/plugins/wchat/smileys/stat.png"},"26":{class:"smile_def_26",img:"/plugins/wchat/smileys/stat.png"},"27":{class:"smile_def_27",img:"/plugins/wchat/smileys/stat.png"},"28":{class:"smile_def_28",img:"/plugins/wchat/smileys/stat.png"},"29":{class:"smile_def_29",img:"/plugins/wchat/smileys/stat.png"},"30":{class:"smile_def_30",img:"/plugins/wchat/smileys/stat.png"},"31":{class:"smile_def_31",img:"/plugins/wchat/smileys/stat.png"},"32":{class:"smile_def_32",img:"/plugins/wchat/smileys/stat.png"},"33":{class:"smile_def_33",img:"/plugins/wchat/smileys/stat.png"},"34":{class:"smile_def_34",img:"/plugins/wchat/smileys/stat.png"},"35":{class:"smile_def_35",img:"/plugins/wchat/smileys/stat.png"},"36":{class:"smile_def_36",img:"/plugins/wchat/smileys/stat.png"},"37":{class:"smile_def_37",img:"/plugins/wchat/smileys/stat.png"},"38":{class:"smile_def_38",img:"/plugins/wchat/smileys/stat.png"},"39":{class:"smile_def_39",img:"/plugins/wchat/smileys/stat.png"},"40":{class:"smile_def_40",img:"/plugins/wchat/smileys/stat.png"},"41":{class:"smile_def_41",img:"/plugins/wchat/smileys/stat.png"},"42":{class:"smile_def_42",img:"/plugins/wchat/smileys/stat.png"},"43":{class:"smile_def_43",img:"/plugins/wchat/smileys/stat.png"},"44":{class:"smile_def_44",img:"/plugins/wchat/smileys/stat.png"},"45":{class:"smile_def_45",img:"/plugins/wchat/smileys/stat.png"},"46":{class:"smile_def_46",img:"/plugins/wchat/smileys/stat.png"},"47":{class:"smile_def_47",img:"/plugins/wchat/smileys/stat.png"},"48":{class:"smile_def_48",img:"/plugins/wchat/smileys/stat.png"},"49":{class:"smile_def_49",img:"/plugins/wchat/smileys/stat.png"},"50":{class:"smile_def_50",img:"/plugins/wchat/smileys/stat.png"},"51":{class:"smile_def_51",img:"/plugins/wchat/smileys/stat.png"},"52":{class:"smile_def_52",img:"/plugins/wchat/smileys/stat.png"},"53":{class:"smile_def_53",img:"/plugins/wchat/smileys/stat.png"},"54":{class:"smile_def_54",img:"/plugins/wchat/smileys/stat.png"},"55":{class:"smile_def_55",img:"/plugins/wchat/smileys/stat.png"},"56":{class:"smile_def_56",img:"/plugins/wchat/smileys/stat.png"},"57":{class:"smile_def_57",img:"/plugins/wchat/smileys/stat.png"},"58":{class:"smile_def_58",img:"/plugins/wchat/smileys/stat.png"},"59":{class:"smile_def_59",img:"/plugins/wchat/smileys/stat.png"},"60":{class:"smile_def_60",img:"/plugins/wchat/smileys/stat.png"},"61":{class:"smile_def_61",img:"/plugins/wchat/smileys/stat.png"},"62":{class:"smile_def_62",img:"/plugins/wchat/smileys/stat.png"},"63":{class:"smile_def_63",img:"/plugins/wchat/smileys/stat.png"},"64":{class:"smile_def_64",img:"/plugins/wchat/smileys/stat.png"},"65":{class:"smile_def_65",img:"/plugins/wchat/smileys/stat.png"},"66":{class:"smile_def_66",img:"/plugins/wchat/smileys/stat.png"},"67":{class:"smile_def_67",img:"/plugins/wchat/smileys/stat.png"},"68":{class:"smile_def_68",img:"/plugins/wchat/smileys/stat.png"},"69":{class:"smile_def_69",img:"/plugins/wchat/smileys/stat.png"},"70":{class:"smile_def_70",img:"/plugins/wchat/smileys/stat.png"},"71":{class:"smile_def_71",img:"/plugins/wchat/smileys/stat.png"},"72":{class:"smile_def_72",img:"/plugins/wchat/smileys/stat.png"},"73":{class:"smile_def_73",img:"/plugins/wchat/smileys/stat.png"},"74":{class:"smile_def_74",img:"/plugins/wchat/smileys/stat.png"},"75":{class:"smile_def_75",img:"/plugins/wchat/smileys/stat.png"},"76":{class:"smile_def_76",img:"/plugins/wchat/smileys/stat.png"},"77":{class:"smile_def_77",img:"/plugins/wchat/smileys/stat.png"},"78":{class:"smile_def_78",img:"/plugins/wchat/smileys/stat.png"},"79":{class:"smile_def_79",img:"/plugins/wchat/smileys/stat.png"},"80":{class:"smile_def_80",img:"/plugins/wchat/smileys/stat.png"},"81":{class:"smile_def_81",img:"/plugins/wchat/smileys/stat.png"},"82":{class:"smile_def_82",img:"/plugins/wchat/smileys/stat.png"},"83":{class:"smile_def_83",img:"/plugins/wchat/smileys/stat.png"},"84":{class:"smile_def_84",img:"/plugins/wchat/smileys/stat.png"},"85":{class:"smile_def_85",img:"/plugins/wchat/smileys/stat.png"},"86":{class:"smile_def_86",img:"/plugins/wchat/smileys/stat.png"},"87":{class:"smile_def_87",img:"/plugins/wchat/smileys/stat.png"},"88":{class:"smile_def_88",img:"/plugins/wchat/smileys/stat.png"},"89":{class:"smile_def_89",img:"/plugins/wchat/smileys/stat.png"},"90":{class:"smile_def_90",img:"/plugins/wchat/smileys/stat.png"},"91":{class:"smile_def_91",img:"/plugins/wchat/smileys/stat.png"},"92":{class:"smile_def_92",img:"/plugins/wchat/smileys/stat.png"},"93":{class:"smile_def_93",img:"/plugins/wchat/smileys/stat.png"},"94":{class:"smile_def_94",img:"/plugins/wchat/smileys/stat.png"},"95":{class:"smile_def_95",img:"/plugins/wchat/smileys/stat.png"},"96":{class:"smile_def_96",img:"/plugins/wchat/smileys/stat.png"},"97":{class:"smile_def_97",img:"/plugins/wchat/smileys/stat.png"},"98":{class:"smile_def_98",img:"/plugins/wchat/smileys/stat.png"},"99":{class:"smile_def_99",img:"/plugins/wchat/smileys/stat.png"},"100":{class:"smile_def_100",img:"/plugins/wchat/smileys/stat.png"}};
-      </script>
-
-      <!-- Контейнер, куда NEW_WCHAT сам нарисует чат -->
-      <div id="chat_widget"></div>
-
-      <div class="hint">
-        Если появится “Приложение не инициализировано…” — это значит, WebSocket к Volnorez не открылся в VK WebView/сети.
-        Тогда чат может работать только через “Открыть станцию” (встроенный браузер).
-      </div>
-    </div>
-
-  </div>
-
-  <!-- Скрипты Volnorez (порядок важен) -->
-  <script src="https://volnorez.com/plugins/static/js/VERYAJAX+515bd3c751af838d1e3099978d711e2933299.js"></script>
-  <script src="https://volnorez.com/plugins/static/js/KERNEL+6019c1f41b07631a6077a50b7ca55c7d216935.js"></script>
-
+  <!-- VK Bridge подключаем как можно раньше -->
+  <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
   <script>
-    // ВАЖНО: KERNEL ставит media_cfg['server']['this'] на текущий домен (github.io),
-    // а нам нужно, чтобы запросы шли на volnorez.com
-    try { media_cfg['server']['this'] = 'https://volnorez.com/'; } catch(e) {}
+    // Ранняя инициализация: чтобы VK не писал "Приложение не инициализировано"
+    (async () => {
+      try {
+        if (window.vkBridge && vkBridge.send) {
+          await vkBridge.send('VKWebAppInit');
+          window.__VK_READY__ = true;
+        }
+      } catch (e) {
+        console.log('VK init failed:', e);
+      }
+    })();
   </script>
 
-  <script src="https://volnorez.com/plugins/static/js/NEW_WCHAT+ccc6dff89817f2e57c44e3b415cef548106169.js"></script>
-  <script src="https://volnorez.com/plugins/static/js/WCHAT+8f5287b01243ae389a2ee6c5669d34674203.js"></script>
+  <div class="wrap">
+    <div class="head">
+      <p class="title">ПыЛь_ДоРоГ FM</p>
+      <p class="sub">Радио (встроенно) + чат (Volnorez) в одном окне.</p>
+      <div class="warn" id="vkWarn">
+        Похоже, страница открыта не внутри VK. В браузере всё равно работает радио и чат, но без возможностей VK Bridge.
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- РАДИО -->
+      <div class="box">
+        <p class="boxTitle">Радио</p>
+
+        <audio id="audio" preload="none" playsinline></audio>
+
+        <div class="controls">
+          <button class="btn" id="play">▶️ Play</button>
+          <button class="btn" id="pause">⏸️ Pause</button>
+          <button class="btn" id="stop">⏹️ Stop</button>
+
+          <div class="vol">
+            <span style="font-weight:900;font-size:13px">Громкость</span>
+            <input id="volume" type="range" min="0" max="1" step="0.01" value="1" />
+          </div>
+
+          <button class="btn" id="openStation">🌐 Открыть станцию</button>
+        </div>
+
+        <div class="hint" id="status">Нажмите Play (autoplay в VK часто блокируется).</div>
+      </div>
+
+      <!-- ЧАТ -->
+      <div class="box" style="min-height:0">
+        <p class="boxTitle">Чат</p>
+
+        <div class="controls">
+          <button class="btn" id="openChat">💬 Открыть чат</button>
+          <span class="hint">Если сверху в чате видна шапка — увеличь <b>--cropTop</b> (например 160).</span>
+        </div>
+
+        <div class="chatMask">
+          <iframe
+            id="chatFrame"
+            src="https://m.volnorez.com/pyl_dorog-fm"
+            allow="autoplay; clipboard-write"
+            referrerpolicy="no-referrer-when-downgrade"
+            title="Чат Volnorez (mobile)">
+          </iframe>
+        </div>
+
+        <div class="hint">
+          Если чат показывает “Приложение не инициализировано…” — это уже соединение Volnorez (WebSocket) может блокироваться в VK WebView/сети.
+          В таком случае кнопка “Открыть чат” обычно помогает.
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
-    // ===== Радио (прямой поток) =====
+    // ====== Константы ======
     const STREAM_URL = 'https://stream.volnorez.com/live-app/869683?br=192';
+    const STATION_URL = 'https://volnorez.com/pyl_dorog-fm/';
+    const CHAT_URL = 'https://volnorez.com/pyl_dorog-fm/#chat_widget';
 
+    // ====== VK helpers ======
+    const hasBridge = () => (window.vkBridge && vkBridge.send);
+    async function openUrl(url){
+      if (hasBridge()) {
+        try { await vkBridge.send('VKWebAppOpenURL', { url }); return; } catch(e) {}
+      }
+      window.open(url, '_blank', 'noopener');
+    }
+
+    // ====== Радио ======
     const audio = document.getElementById('audio');
     const statusEl = document.getElementById('status');
     const setStatus = (t)=> statusEl.textContent = t || '';
 
-    document.getElementById('volume').addEventListener('input', (e)=> audio.volume = Number(e.target.value));
+    document.getElementById('volume').addEventListener('input', (e)=> {
+      audio.volume = Number(e.target.value);
+    });
 
     document.getElementById('play').onclick = async () => {
       try {
@@ -170,12 +258,35 @@
         await audio.play();
         setStatus('Играет ✅');
       } catch (e) {
+        console.log(e);
         setStatus('Не удалось запустить. Нажмите Play ещё раз.');
       }
     };
-    document.getElementById('pause').onclick = () => { audio.pause(); setStatus('Пауза.'); };
-    document.getElementById('stop').onclick = () => { audio.pause(); audio.removeAttribute('src'); audio.load(); setStatus('Остановлено.'); };
-    audio.addEventListener('error', ()=> setStatus('Ошибка потока (ссылка могла измениться).'));
+
+    document.getElementById('pause').onclick = () => {
+      audio.pause();
+      setStatus('Пауза.');
+    };
+
+    document.getElementById('stop').onclick = () => {
+      audio.pause();
+      audio.removeAttribute('src');
+      audio.load();
+      setStatus('Остановлено.');
+    };
+
+    audio.addEventListener('error', () => {
+      setStatus('Ошибка потока. Возможно ссылка временная/изменилась.');
+    });
+
+    // ====== Кнопки ======
+    document.getElementById('openStation').onclick = () => openUrl(STATION_URL);
+    document.getElementById('openChat').onclick = () => openUrl(CHAT_URL);
+
+    // Предупреждение, если не внутри VK
+    if (!hasBridge()) {
+      document.getElementById('vkWarn').style.display = 'block';
+    }
   </script>
 </body>
 </html>

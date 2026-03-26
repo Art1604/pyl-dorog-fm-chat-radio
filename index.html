@@ -3,152 +3,60 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>ПыЛь_ДоРоГ FM — радио и чат</title>
+  <title>ПыЛь_ДоРоГ FM — Радио и чат</title>
 
   <style>
-    :root{
-      --bg:#e6e6e6;
-      --panel:#f4f4f4;
-      --border:#b9b9b9;
-      --border2:#8f8f8f;
-      --text:#111;
-      --muted:#444;
-      --shadow:0 10px 30px rgba(0,0,0,.15);
-      --radius:8px;
-    }
-
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; margin:0; background:var(--bg); color:var(--text);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; }
-
+    body{margin:0;background:#e6e6e6;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
     .shell{
-      height: calc(100% - 24px);
-      max-width: 980px;
-      margin: 12px auto;
-      background: var(--panel);
-      border: 1px solid var(--border2);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      display:flex;
-      flex-direction:column;
+      max-width:980px;margin:12px auto;background:#f4f4f4;
+      border:1px solid #8f8f8f;border-radius:8px;overflow:hidden;
+      box-shadow:0 10px 30px rgba(0,0,0,.15);
     }
-
-    /* тонкая “рамка” как у старых панелей */
-    .shellHeader{
-      padding: 8px 10px;
-      background: linear-gradient(#f9f9f9, #e9e9e9);
-      border-bottom: 1px solid var(--border);
-      font-weight: 800;
-      font-size: 14px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .shellHeader .small{
-      font-weight:600;
-      font-size:12px;
-      color:var(--muted);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .content{
-      flex:1;
-      min-height:0;
-      display:flex;
-      flex-direction:column;
-    }
-
-    /* Блок плеера сверху */
-    .playerBar{
-      padding: 8px 10px;
-      border-bottom: 1px solid var(--border);
-      background:#ededed;
-    }
-
-    /* Блок чата — весь остаток */
-    .chatArea{
-      flex:1;
-      min-height:0;
-      padding: 0;
-      background:#dcdcdc;
-    }
-
-    /* Рамка вокруг чата */
+    .top{padding:8px 10px;background:linear-gradient(#f9f9f9,#e9e9e9);border-bottom:1px solid #b9b9b9;font-weight:800}
+    .player{padding:10px;border-bottom:1px solid #b9b9b9;background:#ededed}
+    .chatWrap{padding:6px;background:#dcdcdc}
     .chatFrame{
-      height:100%;
-      border-top: 1px solid #fff;
-      border-left: 1px solid #fff;
-      border-right: 1px solid var(--border2);
-      border-bottom: 1px solid var(--border2);
-      background:#fff;
-      padding: 6px; /* небольшой внутренний отступ */
+      height:560px;background:#fff;
+      border-top:1px solid #fff;border-left:1px solid #fff;
+      border-right:1px solid #8f8f8f;border-bottom:1px solid #8f8f8f;
+      padding:6px;overflow:hidden;
     }
-
-    /* сам контейнер виджета */
-    #volnorez_chat{
-      width:100%;
-      height:100%;
-      display:block;
-    }
-
-    /* чуть уменьшим внешние отступы у элементов виджета, если они есть */
-    #volnorez_chat * { max-width: 100%; }
-
-    /* На очень маленьких экранах — убираем заголовок “окна” */
-    @media (max-width: 480px){
-      .shellHeader{ display:none; }
-      .shell{ height:100%; margin:0; border-radius:0; }
-    }
+    #volnorez_chat{width:100%;height:100%;display:block;}
   </style>
 </head>
 
 <body>
-  <!-- VK Bridge как можно раньше -->
+  <!-- VK Bridge (не обязательно, но полезно для Mini App) -->
   <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
   <script>
     (async () => {
-      try {
-        if (window.vkBridge && vkBridge.send) {
-          await vkBridge.send('VKWebAppInit');
-        }
-      } catch (e) {
-        console.log('VK init failed:', e);
-      }
+      try { await vkBridge.send('VKWebAppInit'); } catch(e) {}
     })();
   </script>
 
   <div class="shell">
-    <div class="shellHeader">
-      <div>ПыЛь_ДоРоГ FM — Радио и чат</div>
-      <div class="small">Эфир + чат Volnorez (классический вид)</div>
+    <div class="top">ПыЛь_ДоРоГ FM — Радио и чат</div>
+
+    <!-- ПЛЕЕР -->
+    <div class="player">
+      <div id="vplayer001e157d">
+        <a href="https://volnorez.com/pyl_dorog-fm" title="радио ПыЛь_ДоРоГ FM">радио ПыЛь_ДоРоГ FM</a>
+        <script async type="text/javascript"
+          src="https://volnorez.com/plugins/jscode/player_js/001e157d/%7B%22share%22%3A%22source%22%2C%22skin%22%3A%22main%22%2C%22style%22%3A%7B%7D%7D">
+        </script>
+      </div>
     </div>
 
-    <div class="content">
-      <!-- ПЛЕЕР -->
-      <div class="playerBar">
-        <div id="vplayer001e157d">
-          <a href="https://volnorez.com/pyl_dorog-fm" title="радио ПыЛь_ДоРоГ FM">радио ПыЛь_ДоРоГ FM</a>
-          <script async type="text/javascript"
-            src="https://volnorez.com/plugins/jscode/player_js/001e157d/%7B%22share%22%3A%22source%22%2C%22skin%22%3A%22main%22%2C%22style%22%3A%7B%7D%7D">
+    <!-- ЧАТ -->
+    <div class="chatWrap">
+      <div class="chatFrame">
+        <div id="volnorez_chat">
+          Радио «<a href="https://volnorez.com/pyl_dorog-fm" target="_blank" rel="noopener">ПыЛь_ДоРоГ FM</a>»
+          <script>
+            // обычно ID чата такой же, как ID плеера (у тебя 001e157d)
+            var jscode_chat_id = "001e157d";
           </script>
-        </div>
-      </div>
-
-      <!-- ЧАТ -->
-      <div class="chatArea">
-        <div class="chatFrame">
-          <div id="volnorez_chat">
-            Радио «<a href="https://volnorez.com/pyl_dorog-fm" title="ПыЛь_ДоРоГ FM" style="color:#111;text-decoration:underline;">ПыЛь_ДоРоГ FM</a>»
-            <script>
-              // если у чата другой id — сюда ставим его
-              var jscode_chat_id = "001e157d";
-            </script>
-            <script src="https://volnorez.com/application/maxsite/plugins/jscode/js/jscode_chat.js"></script>
-          </div>
+          <script src="https://volnorez.com/application/maxsite/plugins/jscode/js/jscode_chat.js"></script>
         </div>
       </div>
     </div>

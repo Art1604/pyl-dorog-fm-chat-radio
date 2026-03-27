@@ -1,9 +1,4 @@
-<!doctype html>
-<html lang="ru">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>ПыЛь_ДоРоГ FM — радио и чат</title>
+ <title>ПыЛь_ДоРоГ FM</title>
 
   <style>
     html, body {
@@ -49,7 +44,7 @@
       height: 980px;
       border: 0;
       position: relative;
-      top: -360px; /* подрезаем верх страницы до области чата */
+      top: -360px;
       background: #fff;
     }
 
@@ -98,7 +93,7 @@
   <div class="app">
     <div class="body-wrap">
 
-      <!-- РОДНОЙ ПЛЕЕР -->
+      <!-- СЕРЫЙ ПЛЕЕР -->
       <div class="player-box">
         <div id="vplayer001e157d">
           <a href="https://volnorez.com/pyl_dorog-fm" title="радио ПыЛь_ДоРоГ FM">
@@ -110,7 +105,7 @@
         </div>
       </div>
 
-      <!-- РОДНОЙ DESKTOP ЧАТ С КОЛОНКОЙ ПОЛЬЗОВАТЕЛЕЙ -->
+      <!-- РОДНОЙ DESKTOP-ЧАТ -->
       <div class="chat-frame">
         <iframe
           src="https://volnorez.com/pyl_dorog-fm/#chat_widget"
@@ -119,15 +114,15 @@
           title="Родной чат Volnorez">
         </iframe>
       </div>
+
     </div>
 
     <div class="fail" id="failBox">
-      Чат не загрузился. Попробуй обновить страницу или открыть станцию на сайте.
+      Чат не загрузился. Попробуй обновить страницу.
     </div>
   </div>
 
   <script>
-    // Простая проверка: если iframe вообще не стартовал, покажем подсказку.
     window.addEventListener('load', () => {
       setTimeout(() => {
         const frame = document.querySelector('.chat-frame iframe');

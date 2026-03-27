@@ -60,49 +60,55 @@
       border-top: 1px solid #d9c98d;
     }
 
-    /* Правка положения смайлов в поле ввода, как у Volnorez */
+    /* Смайлы в строке ввода */
     .chat_message_input > img {
       vertical-align: bottom !important;
       margin-top: -8px !important;
       margin-bottom: -4px !important;
     }
 
-    .chat_history > div > div > img {
-      vertical-align: bottom !important;
-    }
-
-    /* Для gif/png-мемов */
+    /* Смайлы в сообщениях */
+    .chat_history > div > div > img,
     .chat_history img,
     .chat_smileys img,
     .smileys_sheet img {
-      max-width: none;
+      vertical-align: bottom !important;
+      max-width: none !important;
     }
 
-    /* Для видео-мемов — стили из полной страницы */
+    /* Панель смайлов */
+    .smileys_tabs {
+      white-space: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .smileys_sheet {
+      overflow: auto;
+    }
+
+    /* Видео-мемы */
     .smile_wrapper .video-container {
       width: 33.33%;
       height: 5vw;
+      min-height: 56px;
+      max-height: 96px;
       background: #000;
+      display: inline-block;
       margin: 0 auto;
       vertical-align: middle;
       text-align: center;
-      display: inline-block;
-      min-height: 56px;
-      max-height: 96px;
     }
 
-    .smile_wrapper .video-container .video_meme {
+    .smile_wrapper .video-container .video_meme,
+    .smile_wrapper video,
+    .chat_history video {
       width: 100%;
       height: 100%;
       display: block;
       margin: auto;
       object-fit: contain;
       background: #000;
-    }
-
-    .smile_wrapper video {
-      background: #000;
-      object-fit: contain;
     }
 
     @media (max-width: 700px) {
@@ -141,8 +147,6 @@
 
   <div class="app">
     <div class="body-wrap">
-
-      <!-- ПЛЕЕР -->
       <div class="player-box">
         <div id="vplayer001e157d">
           <a href="https://volnorez.com/pyl_dorog-fm" title="радио ПыЛь_ДоРоГ FM">
@@ -154,7 +158,6 @@
         </div>
       </div>
 
-      <!-- ЧАТ -->
       <div class="chat-frame">
         <div id="volnorez_chat"
              data-code="001e157d"
@@ -185,6 +188,18 @@
       return url;
     }
 
+    function fixBackgroundImageUrl(el) {
+      const bg = getComputedStyle(el).backgroundImage;
+      if (!bg || bg === 'none') return;
+      const match = bg.match(/url\(["']?([^"')]+)["']?\)/);
+      if (!match) return;
+
+      const fixed = absolutizeAssetUrl(match[1]);
+      if (fixed !== match[1]) {
+        el.style.backgroundImage = `url("${fixed}")`;
+      }
+    }
+
     function fixVideoMemes(root = document) {
       root.querySelectorAll('video').forEach((video) => {
         const src = video.getAttribute('src');
@@ -210,7 +225,7 @@
       });
     }
 
-    function fixSmileyAssets(root = document) {
+    function fixChatAssets(root = document) {
       root.querySelectorAll('img, source, video').forEach((el) => {
         const src = el.getAttribute('src');
         if (src) el.setAttribute('src', absolutizeAssetUrl(src));
@@ -233,23 +248,14 @@
       });
 
       root.querySelectorAll('*').forEach((el) => {
-        const bg = getComputedStyle(el).backgroundImage;
-        if (!bg || bg === 'none') return;
-
-        const match = bg.match(/url\(["']?([^"')]+)["']?\)/);
-        if (!match) return;
-
-        const fixed = absolutizeAssetUrl(match[1]);
-        if (fixed !== match[1]) {
-          el.style.backgroundImage = `url("${fixed}")`;
-        }
+        fixBackgroundImageUrl(el);
       });
 
       fixVideoMemes(root);
     }
 
     const observer = new MutationObserver(() => {
-      fixSmileyAssets(document);
+      fixChatAssets(document);
     });
 
     observer.observe(document.documentElement, {
@@ -259,19 +265,22 @@
       attributeFilter: ['src', 'srcset', 'style', 'poster']
     });
 
+    function runFixes() {
+      fixChatAssets(document);
+
+      const root = document.getElementById('volnorez_chat');
+      const fail = document.getElementById('failBox');
+
+      if (!root || root.children.length === 0) {
+        fail.style.display = 'block';
+      }
+    }
+
     window.addEventListener('load', () => {
-      fixSmileyAssets(document);
-
-      setTimeout(() => {
-        fixSmileyAssets(document);
-
-        const root = document.getElementById('volnorez_chat');
-        const fail = document.getElementById('failBox');
-
-        if (!root || root.children.length === 0) {
-          fail.style.display = 'block';
-        }
-      }, 4000);
+      runFixes();
+      setTimeout(runFixes, 1500);
+      setTimeout(runFixes, 3000);
+      setTimeout(runFixes, 5000);
     });
   </script>
 </body>

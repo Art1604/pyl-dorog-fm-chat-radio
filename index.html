@@ -3,20 +3,21 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <base href="https://volnorez.com/">
   <title>ПыЛь_ДоРоГ FM</title>
 
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      background: #dedede;
+      background: #dcdcdc;
       font-family: Arial, sans-serif;
       overflow: hidden;
     }
 
     .app {
       max-width: 980px;
-      margin: 10px auto;
+      margin: 8px auto;
       background: #e5e5e5;
       border: 1px solid #9a9a9a;
       border-radius: 8px;
@@ -25,41 +26,94 @@
     }
 
     .body-wrap {
-      padding: 8px;
+      padding: 6px;
       background: #e5e5e5;
     }
 
     .player-box {
       background: #e5e5e5;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
-    .chat-frame {
-      height: 620px;
-      background: #dcdcdc;
+    /* почти незаметная стыковка */
+    .chat-wrap {
+      background: #d8d8d8;
       border: 1px solid #9f9f9f;
       border-radius: 6px;
       overflow: hidden;
       box-shadow: inset 0 1px 0 #f8f8f8;
+    }
+
+    .chat-frame {
+      height: 620px;
+      background: #d8d8d8;
+      overflow: hidden;
       position: relative;
     }
 
-    .chat-frame iframe {
+    #volnorez_chat {
       width: 100%;
-      height: 980px;
-      border: 0;
-      position: relative;
-      top: -360px;
-      background: #fff;
+      height: 100%;
+      display: block;
     }
 
-    .fail {
+    .chat-fail {
       display: none;
       padding: 10px;
       font-size: 12px;
       color: #333;
       background: #fff5d8;
       border-top: 1px solid #d9c98d;
+    }
+
+    .chat-fail a {
+      color: #111;
+    }
+
+    /* лёгкая подгонка под родной чат */
+    .chat_message_input > img {
+      vertical-align: bottom !important;
+      margin-top: -8px !important;
+      margin-bottom: -4px !important;
+    }
+
+    .chat_history img,
+    .chat_smileys img,
+    .smileys_sheet img {
+      max-width: none !important;
+      vertical-align: bottom !important;
+    }
+
+    .smileys_tabs {
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+
+    .smileys_sheet {
+      overflow: auto;
+    }
+
+    .smile_wrapper .video-container {
+      width: 33.33%;
+      height: 5vw;
+      min-height: 56px;
+      max-height: 96px;
+      background: #000;
+      display: inline-block;
+      margin: 0 auto;
+      vertical-align: middle;
+      text-align: center;
+    }
+
+    .smile_wrapper .video-container .video_meme,
+    .smile_wrapper video,
+    .chat_history video {
+      width: 100%;
+      height: 100%;
+      display: block;
+      margin: auto;
+      object-fit: contain;
+      background: #000;
     }
 
     @media (max-width: 700px) {
@@ -69,13 +123,22 @@
         max-width: 100%;
       }
 
-      .chat-frame {
-        height: calc(100vh - 95px);
+      .body-wrap {
+        padding: 4px;
       }
 
-      .chat-frame iframe {
-        height: calc(100vh + 420px);
-        top: -330px;
+      .player-box {
+        margin-bottom: 3px;
+      }
+
+      .chat-frame {
+        height: calc(100vh - 88px);
+      }
+
+      .smile_wrapper .video-container {
+        width: 42%;
+        height: 12vw;
+        min-height: 52px;
       }
     }
   </style>
@@ -104,39 +167,46 @@
           <a href="https://volnorez.com/pyl_dorog-fm" title="радио ПыЛь_ДоРоГ FM">
             радио ПыЛь_ДоРоГ FM
           </a>
-          <script async type="text/javascript"
+          <script
+            async
+            type="text/javascript"
             src="https://volnorez.com/plugins/jscode/player_js/001e157d/%7B%22autoplay%22%3Atrue%2C%22share%22%3A%22source%22%2C%22skin%22%3A%22skin2%22%2C%22style%22%3A%7B%22bg_clr%22%3A%22237%2C237%2C237%22%2C%22b_clr%22%3A%22179%2C179%2C179%22%2C%22icon_clr%22%3A%2266%2C66%2C66%22%2C%22ch%22%3A%2237%22%2C%22bg_clr1%22%3A%22243%2C243%2C243%22%2C%22bg_clr2%22%3A%22196%2C196%2C196%22%2C%22bg_clr3%22%3A%22183%2C183%2C183%22%2C%22bg_clr4%22%3A%22167%2C167%2C167%22%2C%22txt_clr%22%3A%22205%2C209%2C205%22%7D%7D">
           </script>
         </div>
       </div>
 
-      <!-- РОДНОЙ DESKTOP-ЧАТ -->
-      <div class="chat-frame">
-        <iframe
-          src="https://volnorez.com/pyl_dorog-fm/#chat_widget"
-          allow="autoplay; clipboard-write"
-          referrerpolicy="no-referrer-when-downgrade"
-          title="Родной чат Volnorez">
-        </iframe>
+      <!-- ТЕКУЩИЙ СЕРЫЙ ЧАТ -->
+      <div class="chat-wrap">
+        <div class="chat-frame">
+          <div
+            id="volnorez_chat"
+            data-code="001e157d"
+            data-skin="skin_4"
+            data-skin-params="'bg_clr':'222,222,222','panel_clr':'216,216,216','ib_clr':'250,250,250','msgbg_clr':'238,238,238','omsgbg_clr':'229,229,229','txt_clr':'18,18,18','b_clr':'145,145,145','icon_clr':'120,120,120','label_clr':'60,61,61','dj_clr':'63,191,7'">
+          </div>
+
+          <script src="https://volnorez.com/plugins/jscode/chat_js"></script>
+        </div>
+
+        <div class="chat-fail" id="chatFail">
+          Чат не загрузился.
+          <a href="https://volnorez.com/pyl_dorog-fm/#chat_widget" target="_blank" rel="noopener">
+            Открыть чат на сайте
+          </a>
+        </div>
       </div>
-
-    </div>
-
-    <div class="fail" id="failBox">
-      Чат не загрузился. Попробуй обновить страницу.
     </div>
   </div>
 
   <script>
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        const frame = document.querySelector('.chat-frame iframe');
-        const fail = document.getElementById('failBox');
-        if (!frame || !frame.src) {
-          fail.style.display = 'block';
-        }
-      }, 4000);
-    });
+    setTimeout(() => {
+      const root = document.getElementById('volnorez_chat');
+      const fail = document.getElementById('chatFail');
+
+      if (!root || root.children.length === 0) {
+        fail.style.display = 'block';
+      }
+    }, 4000);
   </script>
 </body>
 </html>

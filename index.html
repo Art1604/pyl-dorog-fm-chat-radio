@@ -67,7 +67,7 @@
       margin-bottom: -4px !important;
     }
 
-    /* Смайлы в сообщениях */
+    /* Смайлы и картинки в сообщениях */
     .chat_history > div > div > img,
     .chat_history img,
     .chat_smileys img,
@@ -76,18 +76,7 @@
       max-width: none !important;
     }
 
-    /* Панель смайлов */
-    .smileys_tabs {
-      white-space: nowrap;
-      overflow-x: auto;
-      overflow-y: hidden;
-    }
-
-    .smileys_sheet {
-      overflow: auto;
-    }
-
-    /* Видео-мемы */
+    /* Контейнеры для видео-мемов */
     .smile_wrapper .video-container {
       width: 33.33%;
       height: 5vw;
@@ -147,6 +136,8 @@
 
   <div class="app">
     <div class="body-wrap">
+
+      <!-- ПЛЕЕР -->
       <div class="player-box">
         <div id="vplayer001e157d">
           <a href="https://volnorez.com/pyl_dorog-fm" title="радио ПыЛь_ДоРоГ FM">
@@ -158,6 +149,7 @@
         </div>
       </div>
 
+      <!-- ЧАТ -->
       <div class="chat-frame">
         <div id="volnorez_chat"
              data-code="001e157d"
@@ -188,44 +180,9 @@
       return url;
     }
 
-    function fixBackgroundImageUrl(el) {
-      const bg = getComputedStyle(el).backgroundImage;
-      if (!bg || bg === 'none') return;
-      const match = bg.match(/url\(["']?([^"')]+)["']?\)/);
-      if (!match) return;
+    function patchChatAssets(root) {
+      if (!root) return;
 
-      const fixed = absolutizeAssetUrl(match[1]);
-      if (fixed !== match[1]) {
-        el.style.backgroundImage = `url("${fixed}")`;
-      }
-    }
-
-    function fixVideoMemes(root = document) {
-      root.querySelectorAll('video').forEach((video) => {
-        const src = video.getAttribute('src');
-        if (src) video.setAttribute('src', absolutizeAssetUrl(src));
-
-        video.setAttribute('playsinline', '');
-        video.setAttribute('muted', '');
-        video.muted = true;
-        video.loop = true;
-        video.autoplay = true;
-        video.preload = 'auto';
-
-        video.querySelectorAll('source').forEach((source) => {
-          const s = source.getAttribute('src');
-          if (s) source.setAttribute('src', absolutizeAssetUrl(s));
-        });
-
-        try {
-          video.load();
-          const p = video.play();
-          if (p && typeof p.catch === 'function') p.catch(() => {});
-        } catch (e) {}
-      });
-    }
-
-    function fixChatAssets(root = document) {
       root.querySelectorAll('img, source, video').forEach((el) => {
         const src = el.getAttribute('src');
         if (src) el.setAttribute('src', absolutizeAssetUrl(src));
@@ -248,39 +205,79 @@
       });
 
       root.querySelectorAll('*').forEach((el) => {
-        fixBackgroundImageUrl(el);
+        const bg = getComputedStyle(el).backgroundImage;
+        if (!bg || bg === 'none') return;
+
+        const match = bg.match(/url\(["']?([^"')]+)["']?\)/);
+        if (!match) return;
+
+        const fixed = absolutizeAssetUrl(match[1]);
+        if (fixed !== match[1]) {
+          el.style.backgroundImage = `url("${fixed}")`;
+        }
       });
 
-      fixVideoMemes(root);
+      root.querySelectorAll('video').forEach((video) => {
+        const src = video.getAttribute('src');
+        if (src) video.setAttribute('src', absolutizeAssetUrl(src));
+
+        video.setAttribute('playsinline', '');
+        video.setAttribute('muted', '');
+        video.muted = true;
+        video.loop = true;
+        video.autoplay = true;
+        video.preload = 'auto';
+
+        video.querySelectorAll('source').forEach((source) => {
+          const s = source.getAttribute('src');
+          if (s) source.setAttribute('src', absolutizeAssetUrl(s));
+        });
+
+        try {
+          const p = video.play();
+          if (p && typeof p.catch === 'function') p.catch(() => {});
+        } catch (e) {}
+      });
     }
 
-    const observer = new MutationObserver(() => {
-      fixChatAssets(document);
-    });
-
-    observer.observe(document.documentElement, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['src', 'srcset', 'style', 'poster']
-    });
-
-    function runFixes() {
-      fixChatAssets(document);
-
+    function startChatPatch() {
       const root = document.getElementById('volnorez_chat');
       const fail = document.getElementById('failBox');
 
-      if (!root || root.children.length === 0) {
-        fail.style.display = 'block';
-      }
+      let tries = 0;
+      const timer = setInterval(() => {
+        tries++;
+
+        const ready = root && root.children.length > 0;
+
+        if (ready) {
+          clearInterval(timer);
+
+          patchChatAssets(root);
+
+          const observer = new MutationObserver(() => {
+            patchChatAssets(root);
+          });
+
+          observer.observe(root, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['src', 'srcset', 'poster', 'style']
+          });
+
+          return;
+        }
+
+        if (tries > 10) {
+          clearInterval(timer);
+          if (fail) fail.style.display = 'block';
+        }
+      }, 1000);
     }
 
     window.addEventListener('load', () => {
-      runFixes();
-      setTimeout(runFixes, 1500);
-      setTimeout(runFixes, 3000);
-      setTimeout(runFixes, 5000);
+      startChatPatch();
     });
   </script>
 </body>

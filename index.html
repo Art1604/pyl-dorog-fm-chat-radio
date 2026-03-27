@@ -3,7 +3,6 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <base href="https://volnorez.com/">
   <title>ПыЛь_ДоРоГ FM</title>
 
   <style>
@@ -45,59 +44,13 @@
       position: relative;
     }
 
-    #volnorez_chat {
+    .chat-frame iframe {
       width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    .fail {
-      display: none;
-      padding: 10px;
-      font-size: 12px;
-      color: #333;
-      background: #fff5d8;
-      border-top: 1px solid #d9c98d;
-    }
-
-    /* Смайлы в строке ввода */
-    .chat_message_input > img {
-      vertical-align: bottom !important;
-      margin-top: -8px !important;
-      margin-bottom: -4px !important;
-    }
-
-    /* Смайлы и картинки в сообщениях */
-    .chat_history > div > div > img,
-    .chat_history img,
-    .chat_smileys img,
-    .smileys_sheet img {
-      vertical-align: bottom !important;
-      max-width: none !important;
-    }
-
-    /* Контейнеры для видео-мемов */
-    .smile_wrapper .video-container {
-      width: 33.33%;
-      height: 5vw;
-      min-height: 56px;
-      max-height: 96px;
-      background: #000;
-      display: inline-block;
-      margin: 0 auto;
-      vertical-align: middle;
-      text-align: center;
-    }
-
-    .smile_wrapper .video-container .video_meme,
-    .smile_wrapper video,
-    .chat_history video {
-      width: 100%;
-      height: 100%;
-      display: block;
-      margin: auto;
-      object-fit: contain;
-      background: #000;
+      height: 700px;
+      border: 0;
+      position: relative;
+      top: -120px;
+      background: #fff;
     }
 
     @media (max-width: 700px) {
@@ -111,10 +64,9 @@
         height: calc(100vh - 95px);
       }
 
-      .smile_wrapper .video-container {
-        width: 42%;
-        height: 12vw;
-        min-height: 52px;
+      .chat-frame iframe {
+        height: calc(100vh + 80px);
+        top: -100px;
       }
     }
   </style>
@@ -151,134 +103,15 @@
 
       <!-- ЧАТ -->
       <div class="chat-frame">
-        <div id="volnorez_chat"
-             data-code="001e157d"
-             data-skin="skin_4"
-             data-skin-params="'bg_clr':'222,222,222','panel_clr':'216,216,216','ib_clr':'250,250,250','msgbg_clr':'238,238,238','omsgbg_clr':'229,229,229','txt_clr':'18,18,18','b_clr':'145,145,145','icon_clr':'120,120,120','label_clr':'60,61,61','dj_clr':'63,191,7'">
-        </div>
-
-        <script src="https://volnorez.com/plugins/jscode/chat_js"></script>
+        <iframe
+          src="https://m.volnorez.com/pyl_dorog-fm"
+          allow="autoplay; clipboard-write"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Чат Volnorez">
+        </iframe>
       </div>
-    </div>
 
-    <div class="fail" id="failBox">
-      Чат не загрузился.
     </div>
   </div>
-
-  <script>
-    function absolutizeAssetUrl(url) {
-      if (!url) return url;
-      if (
-        url.startsWith('http://') ||
-        url.startsWith('https://') ||
-        url.startsWith('data:') ||
-        url.startsWith('blob:')
-      ) return url;
-      if (url.startsWith('//')) return 'https:' + url;
-      if (url.startsWith('/')) return 'https://volnorez.com' + url;
-      return url;
-    }
-
-    function patchChatAssets(root) {
-      if (!root) return;
-
-      root.querySelectorAll('img, source, video').forEach((el) => {
-        const src = el.getAttribute('src');
-        if (src) el.setAttribute('src', absolutizeAssetUrl(src));
-
-        const poster = el.getAttribute('poster');
-        if (poster) el.setAttribute('poster', absolutizeAssetUrl(poster));
-
-        const srcset = el.getAttribute('srcset');
-        if (srcset) {
-          const fixed = srcset
-            .split(',')
-            .map(part => {
-              const bits = part.trim().split(/\s+/);
-              bits[0] = absolutizeAssetUrl(bits[0]);
-              return bits.join(' ');
-            })
-            .join(', ');
-          el.setAttribute('srcset', fixed);
-        }
-      });
-
-      root.querySelectorAll('*').forEach((el) => {
-        const bg = getComputedStyle(el).backgroundImage;
-        if (!bg || bg === 'none') return;
-
-        const match = bg.match(/url\(["']?([^"')]+)["']?\)/);
-        if (!match) return;
-
-        const fixed = absolutizeAssetUrl(match[1]);
-        if (fixed !== match[1]) {
-          el.style.backgroundImage = `url("${fixed}")`;
-        }
-      });
-
-      root.querySelectorAll('video').forEach((video) => {
-        const src = video.getAttribute('src');
-        if (src) video.setAttribute('src', absolutizeAssetUrl(src));
-
-        video.setAttribute('playsinline', '');
-        video.setAttribute('muted', '');
-        video.muted = true;
-        video.loop = true;
-        video.autoplay = true;
-        video.preload = 'auto';
-
-        video.querySelectorAll('source').forEach((source) => {
-          const s = source.getAttribute('src');
-          if (s) source.setAttribute('src', absolutizeAssetUrl(s));
-        });
-
-        try {
-          const p = video.play();
-          if (p && typeof p.catch === 'function') p.catch(() => {});
-        } catch (e) {}
-      });
-    }
-
-    function startChatPatch() {
-      const root = document.getElementById('volnorez_chat');
-      const fail = document.getElementById('failBox');
-
-      let tries = 0;
-      const timer = setInterval(() => {
-        tries++;
-
-        const ready = root && root.children.length > 0;
-
-        if (ready) {
-          clearInterval(timer);
-
-          patchChatAssets(root);
-
-          const observer = new MutationObserver(() => {
-            patchChatAssets(root);
-          });
-
-          observer.observe(root, {
-            childList: true,
-            subtree: true,
-            attributes: true,
-            attributeFilter: ['src', 'srcset', 'poster', 'style']
-          });
-
-          return;
-        }
-
-        if (tries > 10) {
-          clearInterval(timer);
-          if (fail) fail.style.display = 'block';
-        }
-      }, 1000);
-    }
-
-    window.addEventListener('load', () => {
-      startChatPatch();
-    });
-  </script>
 </body>
 </html>

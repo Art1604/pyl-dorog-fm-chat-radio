@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <base href="https://volnorez.com/">
   <title>ПыЛь_ДоРоГ FM</title>
 
   <style>
@@ -34,32 +35,85 @@
       margin-bottom: 4px;
     }
 
-    .chat-frame {
-      height: 640px;
+    /* почти незаметная стыковка */
+    .chat-wrap {
       background: #d8d8d8;
       border: 1px solid #9f9f9f;
       border-radius: 6px;
       overflow: hidden;
       box-shadow: inset 0 1px 0 #f8f8f8;
+    }
+
+    .chat-frame {
+      height: 620px;
+      background: #d8d8d8;
+      overflow: hidden;
       position: relative;
     }
 
-    .chat-frame iframe {
+    #volnorez_chat {
       width: 100%;
-      height: 1040px;
-      border: 0;
-      position: relative;
-      top: -355px;
-      background: #fff;
+      height: 100%;
+      display: block;
     }
 
-    .fail {
+    .chat-fail {
       display: none;
       padding: 10px;
       font-size: 12px;
       color: #333;
       background: #fff5d8;
       border-top: 1px solid #d9c98d;
+    }
+
+    .chat-fail a {
+      color: #111;
+    }
+
+    /* лёгкая подгонка под родной чат */
+    .chat_message_input > img {
+      vertical-align: bottom !important;
+      margin-top: -8px !important;
+      margin-bottom: -4px !important;
+    }
+
+    .chat_history img,
+    .chat_smileys img,
+    .smileys_sheet img {
+      max-width: none !important;
+      vertical-align: bottom !important;
+    }
+
+    .smileys_tabs {
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+
+    .smileys_sheet {
+      overflow: auto;
+    }
+
+    .smile_wrapper .video-container {
+      width: 33.33%;
+      height: 5vw;
+      min-height: 56px;
+      max-height: 96px;
+      background: #000;
+      display: inline-block;
+      margin: 0 auto;
+      vertical-align: middle;
+      text-align: center;
+    }
+
+    .smile_wrapper .video-container .video_meme,
+    .smile_wrapper video,
+    .chat_history video {
+      width: 100%;
+      height: 100%;
+      display: block;
+      margin: auto;
+      object-fit: contain;
+      background: #000;
     }
 
     @media (max-width: 700px) {
@@ -73,13 +127,18 @@
         padding: 4px;
       }
 
+      .player-box {
+        margin-bottom: 3px;
+      }
+
       .chat-frame {
         height: calc(100vh - 88px);
       }
 
-      .chat-frame iframe {
-        height: calc(100vh + 430px);
-        top: -330px;
+      .smile_wrapper .video-container {
+        width: 42%;
+        height: 12vw;
+        min-height: 52px;
       }
     }
   </style>
@@ -116,33 +175,38 @@
         </div>
       </div>
 
-      <!-- РОДНЫЙ DESKTOP-ЧАТ -->
-      <div class="chat-frame">
-        <iframe
-          src="https://volnorez.com/pyl_dorog-fm/#chat_widget"
-          allow="autoplay; clipboard-write"
-          referrerpolicy="no-referrer-when-downgrade"
-          title="Родной чат Volnorez">
-        </iframe>
+      <!-- ТЕКУЩИЙ СЕРЫЙ ЧАТ -->
+      <div class="chat-wrap">
+        <div class="chat-frame">
+          <div
+            id="volnorez_chat"
+            data-code="001e157d"
+            data-skin="skin_4"
+            data-skin-params="'bg_clr':'222,222,222','panel_clr':'216,216,216','ib_clr':'250,250,250','msgbg_clr':'238,238,238','omsgbg_clr':'229,229,229','txt_clr':'18,18,18','b_clr':'145,145,145','icon_clr':'120,120,120','label_clr':'60,61,61','dj_clr':'63,191,7'">
+          </div>
+
+          <script src="https://volnorez.com/plugins/jscode/chat_js"></script>
+        </div>
+
+        <div class="chat-fail" id="chatFail">
+          Чат не загрузился.
+          <a href="https://volnorez.com/pyl_dorog-fm/#chat_widget" target="_blank" rel="noopener">
+            Открыть чат на сайте
+          </a>
+        </div>
       </div>
-
-    </div>
-
-    <div class="fail" id="failBox">
-      Чат не загрузился. Попробуй обновить страницу.
     </div>
   </div>
 
   <script>
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        const frame = document.querySelector('.chat-frame iframe');
-        const fail = document.getElementById('failBox');
-        if (!frame || !frame.src) {
-          fail.style.display = 'block';
-        }
-      }, 4000);
-    });
+    setTimeout(() => {
+      const root = document.getElementById('volnorez_chat');
+      const fail = document.getElementById('chatFail');
+
+      if (!root || root.children.length === 0) {
+        fail.style.display = 'block';
+      }
+    }, 4000);
   </script>
 </body>
 </html>

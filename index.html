@@ -3,147 +3,560 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <base href="https://volnorez.com/">
   <title>ПыЛь_ДоРоГ FM</title>
 
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: #dcdcdc;
-      font-family: Arial, sans-serif;
-      overflow: hidden;
+    :root{
+      --bg:#d9d9d9;
+      --panel:#e5e5e5;
+      --panel-2:#dcdcdc;
+      --line:#9f9f9f;
+      --line-light:#ffffff;
+      --text:#222;
+      --muted:#666;
+      --msg:#f7f7f7;
+      --msg-alt:#efefef;
+      --accent:#7f7f7f;
+      --btn:#ededed;
+      --btn-hover:#dfdfdf;
     }
 
-    .app {
-      max-width: 980px;
-      margin: 8px auto;
-      background: #e5e5e5;
-      border: 1px solid #9a9a9a;
-      border-radius: 8px;
-      box-shadow: inset 0 1px 0 #ffffff;
-      overflow: hidden;
+    *{box-sizing:border-box}
+
+    html,body{
+      margin:0;
+      padding:0;
+      background:var(--bg);
+      font-family:Arial,sans-serif;
+      color:var(--text);
+      overflow:hidden;
     }
 
-    .body-wrap {
-      padding: 6px;
-      background: #e5e5e5;
+    .app{
+      max-width:1100px;
+      margin:8px auto;
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:8px;
+      box-shadow:inset 0 1px 0 var(--line-light);
+      overflow:hidden;
     }
 
-    .player-box {
-      background: #e5e5e5;
-      margin-bottom: 4px;
+    .body-wrap{
+      padding:6px;
+      background:var(--panel);
     }
 
-    /* почти незаметная стыковка */
-    .chat-wrap {
-      background: #d8d8d8;
-      border: 1px solid #9f9f9f;
-      border-radius: 6px;
-      overflow: hidden;
-      box-shadow: inset 0 1px 0 #f8f8f8;
+    .player-box{
+      background:var(--panel);
+      margin-bottom:4px;
+      border:1px solid var(--line);
+      border-radius:6px;
+      overflow:hidden;
+      box-shadow:inset 0 1px 0 #f8f8f8;
     }
 
-    .chat-frame {
-      height: 620px;
-      background: #d8d8d8;
-      overflow: hidden;
-      position: relative;
+    .player-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:10px 12px;
+      background:linear-gradient(#efefef,#dddddd);
+      border-bottom:1px solid #b5b5b5;
     }
 
-    #volnorez_chat {
-      width: 100%;
-      height: 100%;
-      display: block;
+    .station-title{
+      font-size:18px;
+      font-weight:700;
+      letter-spacing:.2px;
     }
 
-    .chat-fail {
-      display: none;
-      padding: 10px;
-      font-size: 12px;
-      color: #333;
-      background: #fff5d8;
-      border-top: 1px solid #d9c98d;
+    .station-sub{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:2px;
     }
 
-    .chat-fail a {
-      color: #111;
+    .live-badge{
+      font-size:12px;
+      padding:4px 10px;
+      border:1px solid #a8a8a8;
+      border-radius:999px;
+      background:#f6f6f6;
+      color:#444;
+      font-weight:700;
     }
 
-    /* лёгкая подгонка под родной чат */
-    .chat_message_input > img {
-      vertical-align: bottom !important;
-      margin-top: -8px !important;
-      margin-bottom: -4px !important;
+    .player-controls{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      gap:8px;
+      padding:10px 12px;
+      background:#e7e7e7;
     }
 
-    .chat_history img,
-    .chat_smileys img,
-    .smileys_sheet img {
-      max-width: none !important;
-      vertical-align: bottom !important;
+    .btn{
+      appearance:none;
+      border:1px solid #9f9f9f;
+      background:var(--btn);
+      color:#222;
+      padding:8px 12px;
+      border-radius:6px;
+      cursor:pointer;
+      font-size:13px;
+      font-weight:700;
     }
 
-    .smileys_tabs {
-      white-space: nowrap;
-      overflow-x: auto;
+    .btn:hover{
+      background:var(--btn-hover);
     }
 
-    .smileys_sheet {
-      overflow: auto;
+    .btn.primary{
+      background:#cfcfcf;
     }
 
-    .smile_wrapper .video-container {
-      width: 33.33%;
-      height: 5vw;
-      min-height: 56px;
-      max-height: 96px;
-      background: #000;
-      display: inline-block;
-      margin: 0 auto;
-      vertical-align: middle;
-      text-align: center;
+    .volume-wrap{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border:1px solid #b5b5b5;
+      border-radius:6px;
+      background:#f4f4f4;
     }
 
-    .smile_wrapper .video-container .video_meme,
-    .smile_wrapper video,
-    .chat_history video {
-      width: 100%;
-      height: 100%;
-      display: block;
-      margin: auto;
-      object-fit: contain;
-      background: #000;
+    .volume-wrap label{
+      font-size:12px;
+      color:#555;
+      white-space:nowrap;
     }
 
-    @media (max-width: 700px) {
-      .app {
-        margin: 0;
-        border-radius: 0;
-        max-width: 100%;
+    input[type="range"]{
+      width:150px;
+      accent-color:#777;
+    }
+
+    .status{
+      padding:0 12px 10px;
+      font-size:12px;
+      color:#555;
+    }
+
+    .chat-shell{
+      border:1px solid var(--line);
+      border-radius:6px;
+      overflow:hidden;
+      background:var(--panel-2);
+      box-shadow:inset 0 1px 0 #f8f8f8;
+    }
+
+    .chat-topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:8px 10px;
+      background:linear-gradient(#efefef,#dddddd);
+      border-bottom:1px solid #b5b5b5;
+    }
+
+    .tabs{
+      display:flex;
+      gap:4px;
+      flex-wrap:wrap;
+    }
+
+    .tab{
+      padding:6px 10px;
+      border:1px solid #a9a9a9;
+      background:#efefef;
+      border-radius:5px;
+      font-size:12px;
+      cursor:pointer;
+      user-select:none;
+    }
+
+    .tab.active{
+      background:#d4d4d4;
+      font-weight:700;
+    }
+
+    .top-actions{
+      display:flex;
+      gap:6px;
+      align-items:center;
+    }
+
+    .top-mini{
+      font-size:12px;
+      color:#666;
+      padding:4px 8px;
+      border:1px solid #b5b5b5;
+      background:#f3f3f3;
+      border-radius:5px;
+    }
+
+    .chat-main{
+      display:grid;
+      grid-template-columns: 1fr 240px;
+      min-height:620px;
+      background:#ddd;
+    }
+
+    .chat-center{
+      display:flex;
+      flex-direction:column;
+      min-width:0;
+      border-right:1px solid #b0b0b0;
+      background:#ececec;
+    }
+
+    .chat-history-wrap{
+      position:relative;
+      flex:1;
+      min-height:0;
+      background:#ededed;
+    }
+
+    .chat-history{
+      height:100%;
+      overflow:auto;
+      padding:10px;
+    }
+
+    .day-label{
+      display:inline-block;
+      margin:0 auto 10px;
+      padding:4px 10px;
+      background:#c9c9c9;
+      color:#444;
+      border-radius:999px;
+      font-size:11px;
+      position:sticky;
+      top:0;
+      left:10px;
+      z-index:2;
+    }
+
+    .msg-group{
+      margin-bottom:10px;
+    }
+
+    .msg{
+      background:var(--msg);
+      border:1px solid #d8d8d8;
+      border-radius:8px;
+      padding:7px 9px;
+      margin-bottom:4px;
+      box-shadow:inset 0 1px 0 #fff;
+    }
+
+    .msg.rj{
+      background:var(--msg-alt);
+    }
+
+    .msg-head{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:4px;
+      font-size:12px;
+    }
+
+    .nick{
+      font-weight:700;
+    }
+
+    .nick.rj{
+      color:#6b4a00;
+    }
+
+    .nick.user{
+      color:#355;
+    }
+
+    .time{
+      color:#777;
+      font-size:11px;
+    }
+
+    .msg-body{
+      font-size:13px;
+      line-height:1.4;
+      word-break:break-word;
+      display:flex;
+      flex-wrap:wrap;
+      gap:4px;
+      align-items:flex-end;
+    }
+
+    .msg-body .emo{
+      font-size:20px;
+      line-height:1;
+    }
+
+    .msg-body .sticker{
+      font-size:28px;
+      line-height:1;
+    }
+
+    .msg-body video{
+      width:110px;
+      height:62px;
+      object-fit:cover;
+      border-radius:6px;
+      background:#000;
+      border:1px solid #999;
+    }
+
+    .chat-bottom{
+      border-top:1px solid #b0b0b0;
+      background:#e4e4e4;
+      padding:8px;
+    }
+
+    .input-row{
+      display:grid;
+      grid-template-columns: 1fr auto auto;
+      gap:8px;
+      align-items:end;
+    }
+
+    .message-input{
+      min-height:44px;
+      max-height:120px;
+      overflow:auto;
+      border:1px solid #a8a8a8;
+      border-radius:6px;
+      padding:8px 10px;
+      background:#fff;
+      font-size:13px;
+      line-height:1.35;
+      outline:none;
+    }
+
+    .message-input:empty:before{
+      content:attr(data-placeholder);
+      color:#888;
+    }
+
+    .message-input .emo{
+      font-size:20px;
+      vertical-align:bottom;
+    }
+
+    .message-input .sticker{
+      font-size:28px;
+      vertical-align:bottom;
+    }
+
+    .message-input video{
+      width:88px;
+      height:50px;
+      object-fit:cover;
+      vertical-align:bottom;
+      border-radius:6px;
+      background:#000;
+      border:1px solid #999;
+    }
+
+    .emoji-panel{
+      display:none;
+      margin-top:8px;
+      border:1px solid #acacac;
+      border-radius:6px;
+      background:#f1f1f1;
+      overflow:hidden;
+    }
+
+    .emoji-panel.open{
+      display:block;
+    }
+
+    .emoji-tabs{
+      display:flex;
+      gap:0;
+      border-bottom:1px solid #bbb;
+      background:#e0e0e0;
+      overflow:auto;
+    }
+
+    .emoji-tab{
+      flex:0 0 auto;
+      padding:8px 12px;
+      cursor:pointer;
+      font-size:12px;
+      border-right:1px solid #bbb;
+      user-select:none;
+      white-space:nowrap;
+    }
+
+    .emoji-tab.active{
+      background:#d0d0d0;
+      font-weight:700;
+    }
+
+    .emoji-sheet{
+      display:none;
+      padding:10px;
+      max-height:220px;
+      overflow:auto;
+      background:#f7f7f7;
+    }
+
+    .emoji-sheet.active{
+      display:block;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(48px,1fr));
+      gap:8px;
+    }
+
+    .item{
+      min-height:48px;
+      border:1px solid #c5c5c5;
+      border-radius:6px;
+      background:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      box-shadow:inset 0 1px 0 #fff;
+      overflow:hidden;
+      padding:4px;
+      text-align:center;
+    }
+
+    .item:hover{
+      background:#ececec;
+    }
+
+    .item .emo{
+      font-size:24px;
+    }
+
+    .item .sticker{
+      font-size:34px;
+      line-height:1;
+    }
+
+    .item video{
+      width:100%;
+      height:60px;
+      object-fit:cover;
+      border-radius:4px;
+      background:#000;
+    }
+
+    .chat-users{
+      display:flex;
+      flex-direction:column;
+      min-width:0;
+      background:#d7d7d7;
+    }
+
+    .users-head{
+      padding:9px 10px;
+      border-bottom:1px solid #b0b0b0;
+      background:#e4e4e4;
+      font-size:12px;
+      font-weight:700;
+      color:#444;
+    }
+
+    .users-list{
+      flex:1;
+      overflow:auto;
+      padding:8px 6px;
+    }
+
+    .user-row{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 6px;
+      border-radius:6px;
+      font-size:13px;
+      cursor:default;
+    }
+
+    .user-row:hover{
+      background:#ececec;
+    }
+
+    .dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:#7a7a7a;
+      flex:0 0 auto;
+    }
+
+    .user-name{
+      min-width:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .user-row.rj .user-name{
+      color:#6b4a00;
+      font-weight:700;
+    }
+
+    .user-row.you .user-name{
+      color:#355;
+      font-weight:700;
+    }
+
+    @media (max-width: 860px){
+      .chat-main{
+        grid-template-columns: 1fr;
       }
 
-      .body-wrap {
-        padding: 4px;
+      .chat-center{
+        border-right:0;
+        border-bottom:1px solid #b0b0b0;
       }
 
-      .player-box {
-        margin-bottom: 3px;
+      .chat-users{
+        min-height:150px;
+      }
+    }
+
+    @media (max-width: 700px){
+      .app{
+        margin:0;
+        border-radius:0;
       }
 
-      .chat-frame {
-        height: calc(100vh - 88px);
+      .body-wrap{
+        padding:4px;
       }
 
-      .smile_wrapper .video-container {
-        width: 42%;
-        height: 12vw;
-        min-height: 52px;
+      .chat-main{
+        min-height:calc(100vh - 130px);
+      }
+
+      .player-top{
+        align-items:flex-start;
+        flex-direction:column;
+      }
+
+      .player-controls{
+        gap:6px;
+      }
+
+      input[type="range"]{
+        width:110px;
       }
     }
   </style>
 </head>
-
 <body>
   <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
   <script>
@@ -161,52 +574,442 @@
   <div class="app">
     <div class="body-wrap">
 
-      <!-- СЕРЫЙ ПЛЕЕР -->
       <div class="player-box">
-        <div id="vplayer001e157d">
-          <a href="https://volnorez.com/pyl_dorog-fm" title="радио ПыЛь_ДоРоГ FM">
-            радио ПыЛь_ДоРоГ FM
-          </a>
-          <script
-            async
-            type="text/javascript"
-            src="https://volnorez.com/plugins/jscode/player_js/001e157d/%7B%22autoplay%22%3Atrue%2C%22share%22%3A%22source%22%2C%22skin%22%3A%22skin2%22%2C%22style%22%3A%7B%22bg_clr%22%3A%22237%2C237%2C237%22%2C%22b_clr%22%3A%22179%2C179%2C179%22%2C%22icon_clr%22%3A%2266%2C66%2C66%22%2C%22ch%22%3A%2237%22%2C%22bg_clr1%22%3A%22243%2C243%2C243%22%2C%22bg_clr2%22%3A%22196%2C196%2C196%22%2C%22bg_clr3%22%3A%22183%2C183%2C183%22%2C%22bg_clr4%22%3A%22167%2C167%2C167%22%2C%22txt_clr%22%3A%22205%2C209%2C205%22%7D%7D">
-          </script>
+        <div class="player-top">
+          <div>
+            <div class="station-title">ПыЛь_ДоРоГ FM</div>
+            <div class="station-sub">Свой desktop-style интерфейс</div>
+          </div>
+          <div class="live-badge">LIVE</div>
         </div>
+
+        <div class="player-controls">
+          <button class="btn primary" id="playBtn">▶ Play</button>
+          <button class="btn" id="stopBtn">⏹ Stop</button>
+
+          <div class="volume-wrap">
+            <label for="volume">Громкость</label>
+            <input id="volume" type="range" min="0" max="1" step="0.01" value="1" />
+          </div>
+        </div>
+
+        <div class="status" id="status">Нажмите Play для запуска эфира.</div>
+        <audio id="audio" preload="none" playsinline></audio>
       </div>
 
-      <!-- ТЕКУЩИЙ СЕРЫЙ ЧАТ -->
-      <div class="chat-wrap">
-        <div class="chat-frame">
-          <div
-            id="volnorez_chat"
-            data-code="001e157d"
-            data-skin="skin_4"
-            data-skin-params="'bg_clr':'222,222,222','panel_clr':'216,216,216','ib_clr':'250,250,250','msgbg_clr':'238,238,238','omsgbg_clr':'229,229,229','txt_clr':'18,18,18','b_clr':'145,145,145','icon_clr':'120,120,120','label_clr':'60,61,61','dj_clr':'63,191,7'">
+      <div class="chat-shell">
+        <div class="chat-topbar">
+          <div class="tabs">
+            <div class="tab active">Общий</div>
+          </div>
+          <div class="top-actions">
+            <div class="top-mini">Свой интерфейс</div>
+          </div>
+        </div>
+
+        <div class="chat-main">
+          <div class="chat-center">
+            <div class="chat-history-wrap">
+              <div class="chat-history" id="chatHistory">
+                <div class="day-label">сегодня</div>
+              </div>
+            </div>
+
+            <div class="chat-bottom">
+              <div class="input-row">
+                <div class="message-input" id="messageInput" contenteditable="true" data-placeholder="Напишите сообщение..."></div>
+                <button class="btn" id="emojiBtn">☺</button>
+                <button class="btn primary" id="sendBtn">Отправить</button>
+              </div>
+
+              <div class="emoji-panel" id="emojiPanel">
+                <div class="emoji-tabs">
+                  <div class="emoji-tab active" data-tab="standard">Стандартные</div>
+                  <div class="emoji-tab" data-tab="gif">GIF</div>
+                  <div class="emoji-tab" data-tab="emotions">Эмоции</div>
+                  <div class="emoji-tab" data-tab="stickers">Стикеры</div>
+                  <div class="emoji-tab" data-tab="memes">Мемы</div>
+                </div>
+
+                <div class="emoji-sheet active" data-sheet="standard">
+                  <div class="grid" id="standardGrid"></div>
+                </div>
+
+                <div class="emoji-sheet" data-sheet="gif">
+                  <div class="grid" id="gifGrid"></div>
+                </div>
+
+                <div class="emoji-sheet" data-sheet="emotions">
+                  <div class="grid" id="emotionsGrid"></div>
+                </div>
+
+                <div class="emoji-sheet" data-sheet="stickers">
+                  <div class="grid" id="stickersGrid"></div>
+                </div>
+
+                <div class="emoji-sheet" data-sheet="memes">
+                  <div class="grid" id="memesGrid"></div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <script src="https://volnorez.com/plugins/jscode/chat_js"></script>
-        </div>
-
-        <div class="chat-fail" id="chatFail">
-          Чат не загрузился.
-          <a href="https://volnorez.com/pyl_dorog-fm/#chat_widget" target="_blank" rel="noopener">
-            Открыть чат на сайте
-          </a>
+          <aside class="chat-users">
+            <div class="users-head">Пользователи</div>
+            <div class="users-list" id="usersList"></div>
+          </aside>
         </div>
       </div>
+
     </div>
   </div>
 
   <script>
-    setTimeout(() => {
-      const root = document.getElementById('volnorez_chat');
-      const fail = document.getElementById('chatFail');
+    const STREAM_URL = 'https://stream.volnorez.com/live-app/869683?br=192';
+    const audio = document.getElementById('audio');
+    const statusEl = document.getElementById('status');
+    const volumeEl = document.getElementById('volume');
 
-      if (!root || root.children.length === 0) {
-        fail.style.display = 'block';
+    function setStatus(text) {
+      statusEl.textContent = text;
+    }
+
+    document.getElementById('playBtn').addEventListener('click', async () => {
+      try {
+        if (!audio.src) audio.src = STREAM_URL;
+        await audio.play();
+        setStatus('Эфир играет.');
+      } catch (e) {
+        setStatus('Не удалось запустить. Нажмите Play ещё раз.');
       }
-    }, 4000);
+    });
+
+    document.getElementById('stopBtn').addEventListener('click', () => {
+      audio.pause();
+      audio.removeAttribute('src');
+      audio.load();
+      setStatus('Остановлено.');
+    });
+
+    volumeEl.addEventListener('input', () => {
+      audio.volume = Number(volumeEl.value);
+    });
+
+    audio.addEventListener('error', () => {
+      setStatus('Ошибка потока. Возможно, ссылка изменилась.');
+    });
+
+    const users = [
+      { name: '✫✿✿✿ DJ Эвелина ✿✿✿✫', type: 'rj' },
+      { name: 'P U S H I S T I K', type: 'rj' },
+      { name: '_Apтуpчик_', type: 'you' },
+      { name: 'roma-korchigo', type: 'rj' },
+      { name: '! ღ♥ღ = Валечка = ღ♥ღ !', type: 'user' },
+      { name: 'всегда ваш Ромка', type: 'user' },
+      { name: 'Тест', type: 'user' },
+      { name: 'pushistik12', type: 'user' },
+      { name: '(((!_Viktoriya_!)))', type: 'user' },
+      { name: '☜Алма3ка☞', type: 'user' },
+      { name: '♫Молния♫', type: 'user' },
+      { name: 'KaMaZZ777', type: 'user' }
+    ];
+
+    const messages = [
+      {
+        nick: '_Apтуpчик_',
+        type: 'user',
+        time: '17:56',
+        parts: [{ kind: 'emoji', value: '🙂' }]
+      },
+      {
+        nick: 'P U S H I S T I K',
+        type: 'rj',
+        time: '17:58',
+        parts: [
+          { kind: 'text', value: 'Поток стабильный. Всё хорошо.' },
+          { kind: 'emoji', value: '✨' },
+          { kind: 'emoji', value: '🎶' }
+        ]
+      },
+      {
+        nick: '✫✿✿✿ DJ Эвелина ✿✿✿✫',
+        type: 'rj',
+        time: '18:05',
+        parts: [
+          { kind: 'text', value: 'Спасибо Любимый Мой' },
+          { kind: 'emoji', value: '💛' }
+        ]
+      },
+      {
+        nick: 'Тест',
+        type: 'user',
+        time: '18:29',
+        parts: [{ kind: 'emoji', value: '😊' }]
+      },
+      {
+        nick: 'P U S H I S T I K',
+        type: 'rj',
+        time: '18:39',
+        parts: [
+          { kind: 'text', value: 'У нас ограничения. СМС прислали.' },
+          { kind: 'emoji', value: '😅' }
+        ]
+      }
+    ];
+
+    const standardItems = ['🙂','😉','😎','😊','😇','😍','😘','🤗','🤔','😴','🤝','👏','🔥','✨','🎶','🌟','💛','💥','🙌','👍'];
+    const gifItems = ['😹','🤣','🤩','🥳','😜','😺','🙃','😏','🤭','🤠','🎉','💫'];
+    const emotionItems = ['😭','😡','🥺','😱','😬','😤','🤯','😳','😌','😮','😞','🤪'];
+    const stickerItems = ['🫶','💃','🕺','🫰','🦊','🐱','🐻','🌈','🍓','🎁','🦋','🌸'];
+    const memeVideos = [
+      'https://volnorez.com/static/smileys/meme_275/1.mp4',
+      'https://volnorez.com/static/smileys/meme_276/1.mp4',
+      'https://volnorez.com/static/smileys/meme_277/1.mp4',
+      'https://volnorez.com/static/smileys/meme_278/1.mp4',
+      'https://volnorez.com/static/smileys/meme_279/1.mp4',
+      'https://volnorez.com/static/smileys/meme_280/1.mp4'
+    ];
+
+    const usersList = document.getElementById('usersList');
+    const chatHistory = document.getElementById('chatHistory');
+    const messageInput = document.getElementById('messageInput');
+    const emojiBtn = document.getElementById('emojiBtn');
+    const emojiPanel = document.getElementById('emojiPanel');
+    const sendBtn = document.getElementById('sendBtn');
+
+    function renderUsers() {
+      usersList.innerHTML = '';
+      users.forEach(user => {
+        const row = document.createElement('div');
+        row.className = `user-row ${user.type || ''}`;
+        row.innerHTML = `
+          <div class="dot"></div>
+          <div class="user-name">${escapeHtml(user.name)}</div>
+        `;
+        usersList.appendChild(row);
+      });
+    }
+
+    function createMsgPart(part) {
+      if (part.kind === 'text') {
+        const span = document.createElement('span');
+        span.textContent = part.value;
+        return span;
+      }
+
+      if (part.kind === 'emoji') {
+        const span = document.createElement('span');
+        span.className = 'emo';
+        span.textContent = part.value;
+        return span;
+      }
+
+      if (part.kind === 'sticker') {
+        const span = document.createElement('span');
+        span.className = 'sticker';
+        span.textContent = part.value;
+        return span;
+      }
+
+      if (part.kind === 'video') {
+        const video = document.createElement('video');
+        video.src = part.value;
+        video.autoplay = true;
+        video.loop = true;
+        video.muted = true;
+        video.playsInline = true;
+        video.setAttribute('playsinline', '');
+        return video;
+      }
+
+      const fallback = document.createElement('span');
+      fallback.textContent = '';
+      return fallback;
+    }
+
+    function renderMessages() {
+      const label = chatHistory.querySelector('.day-label');
+      chatHistory.innerHTML = '';
+      chatHistory.appendChild(label);
+
+      messages.forEach(msg => {
+        const group = document.createElement('div');
+        group.className = 'msg-group';
+
+        const box = document.createElement('div');
+        box.className = `msg ${msg.type === 'rj' ? 'rj' : ''}`;
+
+        const head = document.createElement('div');
+        head.className = 'msg-head';
+        head.innerHTML = `
+          <span class="nick ${msg.type === 'rj' ? 'rj' : msg.type === 'you' ? 'user' : 'user'}">${escapeHtml(msg.nick)}</span>
+          <span class="time">${escapeHtml(msg.time)}</span>
+        `;
+
+        const body = document.createElement('div');
+        body.className = 'msg-body';
+        msg.parts.forEach(part => body.appendChild(createMsgPart(part)));
+
+        box.appendChild(head);
+        box.appendChild(body);
+        group.appendChild(box);
+        chatHistory.appendChild(group);
+      });
+
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function makeEmojiGrid(targetId, items, type) {
+      const grid = document.getElementById(targetId);
+      items.forEach(item => {
+        const cell = document.createElement('div');
+        cell.className = 'item';
+        const span = document.createElement('span');
+        span.className = type === 'sticker' ? 'sticker' : 'emo';
+        span.textContent = item;
+        cell.appendChild(span);
+        cell.addEventListener('click', () => insertInlineSpan(item, type));
+        grid.appendChild(cell);
+      });
+    }
+
+    function makeMemeGrid() {
+      const grid = document.getElementById('memesGrid');
+      memeVideos.forEach(src => {
+        const cell = document.createElement('div');
+        cell.className = 'item';
+
+        const video = document.createElement('video');
+        video.src = src;
+        video.autoplay = true;
+        video.loop = true;
+        video.muted = true;
+        video.playsInline = true;
+        video.setAttribute('playsinline', '');
+
+        cell.appendChild(video);
+        cell.addEventListener('click', () => insertInlineVideo(src));
+        grid.appendChild(cell);
+      });
+    }
+
+    function insertInlineSpan(value, type) {
+      const span = document.createElement('span');
+      span.className = type === 'sticker' ? 'sticker' : 'emo';
+      span.textContent = value;
+      placeNodeAtCaret(span);
+      messageInput.focus();
+    }
+
+    function insertInlineVideo(src) {
+      const video = document.createElement('video');
+      video.src = src;
+      video.autoplay = true;
+      video.loop = true;
+      video.muted = true;
+      video.playsInline = true;
+      video.setAttribute('playsinline', '');
+      placeNodeAtCaret(video);
+      messageInput.focus();
+    }
+
+    function placeNodeAtCaret(node) {
+      const sel = window.getSelection();
+      if (!sel || sel.rangeCount === 0) {
+        messageInput.appendChild(node);
+        return;
+      }
+
+      const range = sel.getRangeAt(0);
+      range.deleteContents();
+      range.insertNode(node);
+      range.setStartAfter(node);
+      range.setEndAfter(node);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+
+    function parseInputToParts(container) {
+      const parts = [];
+      container.childNodes.forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          const value = node.textContent.trim();
+          if (value) parts.push({ kind: 'text', value });
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          if (node.tagName === 'SPAN') {
+            if (node.classList.contains('sticker')) {
+              parts.push({ kind: 'sticker', value: node.textContent });
+            } else {
+              parts.push({ kind: 'emoji', value: node.textContent });
+            }
+          } else if (node.tagName === 'VIDEO') {
+            parts.push({ kind: 'video', value: node.getAttribute('src') });
+          } else {
+            const value = node.textContent.trim();
+            if (value) parts.push({ kind: 'text', value });
+          }
+        }
+      });
+      return parts;
+    }
+
+    function sendMessage() {
+      const parts = parseInputToParts(messageInput);
+      if (!parts.length) return;
+
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mm = String(now.getMinutes()).padStart(2, '0');
+
+      messages.push({
+        nick: '_Apтуpчик_',
+        type: 'you',
+        time: `${hh}:${mm}`,
+        parts
+      });
+
+      messageInput.innerHTML = '';
+      renderMessages();
+    }
+
+    emojiBtn.addEventListener('click', () => {
+      emojiPanel.classList.toggle('open');
+    });
+
+    sendBtn.addEventListener('click', sendMessage);
+
+    messageInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    document.querySelectorAll('.emoji-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.emoji-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.emoji-sheet').forEach(s => s.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelector(`.emoji-sheet[data-sheet="${tab.dataset.tab}"]`).classList.add('active');
+      });
+    });
+
+    renderUsers();
+    renderMessages();
+    makeEmojiGrid('standardGrid', standardItems, 'emoji');
+    makeEmojiGrid('gifGrid', gifItems, 'emoji');
+    makeEmojiGrid('emotionsGrid', emotionItems, 'emoji');
+    makeEmojiGrid('stickersGrid', stickerItems, 'sticker');
+    makeMemeGrid();
   </script>
 </body>
 </html>

@@ -60,13 +60,65 @@
       border-top: 1px solid #d9c98d;
     }
 
-    /* Лёгкая безопасная правка смайлов */
+    /* Лёгкий серый тон для chat_js */
+    .chat_cont {
+      font-family: Arial, Helvetica, sans-serif !important;
+      background-color: #dfdfdf !important;
+      border-color: #f7f2f7 !important;
+      box-shadow: inset 1px -2px 5px 1px rgba(0,0,0,.25) !important;
+      border-radius: 10px !important;
+      overflow: hidden !important;
+    }
+
+    .chat_users_container {
+      background: #d8d8d8 !important;
+      border: 1px solid #f7f2f7 !important;
+      box-shadow: 0 -1px 4px 0 rgba(0,0,0,.12) !important;
+    }
+
+    .chat_history_container,
+    .chat_settings,
+    .chat_smileys,
+    .chat_bottom,
+    .chat_tabs > div,
+    .chat_private_tabs > div {
+      font-family: Arial, Helvetica, sans-serif !important;
+    }
+
+    .chat_message_input,
+    .chat_nick_input {
+      background: #f3f3f3 !important;
+      color: #222 !important;
+      border-color: #b8b8b8 !important;
+    }
+
+    .chat_common_tab.selected,
+    .chat_private_tabs > div.selected,
+    .chat_tabs > div.selected {
+      background: #e7e7e7 !important;
+      color: #2f2f2f !important;
+      border-color: #b3b3b3 !important;
+    }
+
+    .chat_usr.chat_ut_owner,
+    .chat_usr.chat_ut_rj,
+    .chat_mynick,
+    .chat_msg_date span {
+      color: #5b5b5b !important;
+    }
+
+    .chat_msg:hover {
+      background-color: #e1e1e1 !important;
+    }
+
+    /* Родная правка Volnorez для смайлов в поле ввода */
     .chat_message_input > img {
       vertical-align: bottom !important;
       margin-top: -8px !important;
       margin-bottom: -4px !important;
     }
 
+    /* Смайлы внутри сообщений */
     .chat_history > div > div > img,
     .chat_msg .chat_msg_text img {
       vertical-align: bottom !important;
@@ -75,9 +127,11 @@
       position: static !important;
     }
 
+    /* БАЗОВАЯ защита всех smile_* без ломания спрайтов */
     #volnorez_chat img[class^="smile_"],
     #volnorez_chat .chat_history img[class^="smile_"],
-    #volnorez_chat .chat_message_input img[class^="smile_"] {
+    #volnorez_chat .chat_message_input img[class^="smile_"],
+    #volnorez_chat .chat_smileys img[class^="smile_"] {
       max-width: none !important;
       max-height: none !important;
       vertical-align: bottom !important;
@@ -86,32 +140,27 @@
       box-shadow: none !important;
       display: inline-block !important;
       background-repeat: no-repeat !important;
-      background-position: center center !important;
     }
 
-    /* Точная правка только для Эмоций */
+    /* ВАЖНО: статичные спрайты вообще не трогаем по position/size */
+    #volnorez_chat img[class^="smile_def_"],
     #volnorez_chat img[class^="smile_emo_"],
+    #volnorez_chat .chat_history img[class^="smile_def_"],
     #volnorez_chat .chat_history img[class^="smile_emo_"],
+    #volnorez_chat .chat_message_input img[class^="smile_def_"],
     #volnorez_chat .chat_message_input img[class^="smile_emo_"],
-    #volnorez_chat .chat_smileys img[class^="smile_emo_"],
-    #volnorez_chat .chat_smileys [class^="smile_emo_"] {
-      width: 28px !important;
-      height: 28px !important;
-      min-width: 28px !important;
-      min-height: 28px !important;
+    #volnorez_chat .chat_smileys img[class^="smile_def_"],
+    #volnorez_chat .chat_smileys img[class^="smile_emo_"] {
       max-width: none !important;
       max-height: none !important;
-      display: inline-block !important;
       vertical-align: bottom !important;
       transform: none !important;
-      filter: none !important;
-      background-size: auto !important;
-      background-repeat: no-repeat !important;
-      background-position: inherit !important;
       border: 0 !important;
       box-shadow: none !important;
+      display: inline-block !important;
     }
 
+    /* Панель смайлов */
     #volnorez_chat .smileys_tabs {
       white-space: nowrap !important;
       overflow-x: auto !important;
@@ -122,6 +171,7 @@
       overflow: auto !important;
     }
 
+    /* Видео-мемы только визуально */
     #volnorez_chat .video-container,
     #volnorez_chat .smile_wrapper .video-container {
       background: #000 !important;
@@ -210,15 +260,18 @@
       return url;
     }
 
-    function fixSmileUrls() {
+    function fixOnlyNonSpriteAssets() {
       const root = document.getElementById('volnorez_chat');
       if (!root) return;
 
       root.querySelectorAll('img').forEach((img) => {
         const cls = img.className || '';
 
-        /* ЭМОЦИИ НЕ ТРОГАЕМ */
-        if (cls.includes('smile_emo_')) return;
+        const isStaticSprite =
+          cls.includes('smile_def_') ||
+          cls.includes('smile_emo_');
+
+        if (isStaticSprite) return;
 
         const src = img.getAttribute('src');
         const dataSrc = img.getAttribute('data-src');
@@ -237,6 +290,45 @@
       });
     }
 
+    function warmMemeVideos() {
+      const root = document.getElementById('volnorez_chat');
+      if (!root) return;
+
+      root.querySelectorAll('.video_meme').forEach((video) => {
+        video.muted = true;
+        video.loop = true;
+        video.autoplay = true;
+        video.setAttribute('muted', '');
+        video.setAttribute('loop', '');
+        video.setAttribute('autoplay', '');
+        video.setAttribute('playsinline', '');
+
+        try {
+          if (video.querySelector('source[src]')) {
+            video.load();
+          }
+        } catch (e) {}
+      });
+    }
+
+    function bindLightFixes() {
+      const root = document.getElementById('volnorez_chat');
+      if (!root) return;
+
+      root.addEventListener('click', (e) => {
+        if (e.target.closest('.chat_smile_btn') || e.target.closest('.smileys_tabs')) {
+          setTimeout(fixOnlyNonSpriteAssets, 120);
+          setTimeout(fixOnlyNonSpriteAssets, 500);
+        }
+
+        if (e.target.closest('[data-tab="9"]')) {
+          setTimeout(fixOnlyNonSpriteAssets, 120);
+          setTimeout(warmMemeVideos, 400);
+          setTimeout(warmMemeVideos, 1000);
+        }
+      });
+    }
+
     window.addEventListener('load', () => {
       const root = document.getElementById('volnorez_chat');
       const fail = document.getElementById('failBox');
@@ -247,9 +339,10 @@
         }
       }, 5000);
 
-      setTimeout(fixSmileUrls, 800);
-      setTimeout(fixSmileUrls, 1800);
-      setTimeout(fixSmileUrls, 3200);
+      setTimeout(fixOnlyNonSpriteAssets, 800);
+      setTimeout(fixOnlyNonSpriteAssets, 1800);
+      setTimeout(fixOnlyNonSpriteAssets, 3200);
+      setTimeout(bindLightFixes, 1200);
     });
   </script>
 </body>

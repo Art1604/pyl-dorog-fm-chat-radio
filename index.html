@@ -60,83 +60,6 @@
       border-top: 1px solid #d9c98d;
     }
 
-    /* Родная правка Volnorez для поля ввода */
-    .chat_message_input > img {
-      vertical-align: bottom !important;
-      margin-top: -8px !important;
-      margin-bottom: -4px !important;
-    }
-
-    /* Общая аккуратная правка смайлов */
-    #volnorez_chat img[class^="smile_"],
-    #volnorez_chat .chat_history [class^="smile_"],
-    #volnorez_chat .chat_message_input [class^="smile_"],
-    #volnorez_chat .chat_smileys [class^="smile_"] {
-      display: inline-block !important;
-      max-width: none !important;
-      max-height: none !important;
-      background-repeat: no-repeat !important;
-      background-position: center center !important;
-      vertical-align: bottom !important;
-      border: 0 !important;
-      box-shadow: none !important;
-      transform: none !important;
-    }
-
-    /* Стандартные и эмоции */
-    #volnorez_chat img[class^="smile_def_"],
-    #volnorez_chat img[class^="smile_emo_"],
-    #volnorez_chat .chat_history img[class^="smile_def_"],
-    #volnorez_chat .chat_history img[class^="smile_emo_"],
-    #volnorez_chat .chat_message_input img[class^="smile_def_"],
-    #volnorez_chat .chat_message_input img[class^="smile_emo_"] {
-      width: 28px !important;
-      height: 28px !important;
-      min-width: 28px !important;
-      min-height: 28px !important;
-      background-size: 100% auto !important;
-    }
-
-    /* GIF */
-    #volnorez_chat img[class^="smile_gif_"],
-    #volnorez_chat .chat_history img[class^="smile_gif_"],
-    #volnorez_chat .chat_message_input img[class^="smile_gif_"] {
-      width: 30px !important;
-      height: 30px !important;
-      min-width: 30px !important;
-      min-height: 30px !important;
-      background-size: contain !important;
-    }
-
-    /* Панель смайлов */
-    #volnorez_chat .smileys_tabs {
-      white-space: nowrap !important;
-      overflow-x: auto !important;
-      overflow-y: hidden !important;
-    }
-
-    #volnorez_chat .smileys_sheet {
-      overflow: auto !important;
-    }
-
-    /* Видео-мемы только визуально, без принудительной догрузки */
-    #volnorez_chat .video-container,
-    #volnorez_chat .smile_wrapper .video-container {
-      background: #000 !important;
-      border-radius: 4px !important;
-      overflow: hidden !important;
-    }
-
-    #volnorez_chat .video_meme,
-    #volnorez_chat .smile_wrapper video,
-    #volnorez_chat .chat_history video {
-      display: block !important;
-      width: 100% !important;
-      height: 100% !important;
-      object-fit: contain !important;
-      background: #000 !important;
-    }
-
     @media (max-width: 700px) {
       .app {
         margin: 0;
@@ -168,6 +91,7 @@
   <div class="app">
     <div class="body-wrap">
 
+      <!-- ПЛЕЕР -->
       <div class="player-box">
         <div id="vplayer001e157d">
           <a href="https://volnorez.com/pyl_dorog-fm" title="радио ПыЛь_ДоРоГ FM">
@@ -181,6 +105,7 @@
         </div>
       </div>
 
+      <!-- ЧАТ -->
       <div class="chat-frame">
         <div
           id="volnorez_chat"
@@ -189,7 +114,7 @@
           data-skin-params="'bg_clr':'222,222,222','panel_clr':'216,216,216','ib_clr':'250,250,250','msgbg_clr':'238,238,238','omsgbg_clr':'229,229,229','txt_clr':'18,18,18','b_clr':'145,145,145','icon_clr':'120,120,120','label_clr':'60,61,61','dj_clr':'63,191,7'">
         </div>
 
-        <script src="https://volnorez.com/plugins/jscode/chat_js"></script>
+        <script async src="https://volnorez.com/plugins/jscode/chat_js"></script>
       </div>
     </div>
 
@@ -199,14 +124,16 @@
   </div>
 
   <script>
-    setTimeout(() => {
-      const root = document.getElementById('volnorez_chat');
-      const fail = document.getElementById('failBox');
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const root = document.getElementById('volnorez_chat');
+        const fail = document.getElementById('failBox');
 
-      if (!root || root.children.length === 0) {
-        fail.style.display = 'block';
-      }
-    }, 4000);
+        if (!root || root.children.length === 0) {
+          fail.style.display = 'block';
+        }
+      }, 4000);
+    });
   </script>
 </body>
 </html>

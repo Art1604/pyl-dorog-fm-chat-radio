@@ -60,7 +60,7 @@
       border-top: 1px solid #d9c98d;
     }
 
-    /* лёгкая безопасная правка смайлов */
+    /* Лёгкая безопасная правка смайлов */
     .chat_message_input > img {
       vertical-align: bottom !important;
       margin-top: -8px !important;
@@ -82,6 +82,32 @@
       max-height: none !important;
       vertical-align: bottom !important;
       transform: none !important;
+      border: 0 !important;
+      box-shadow: none !important;
+      display: inline-block !important;
+      background-repeat: no-repeat !important;
+      background-position: center center !important;
+    }
+
+    /* Точная правка только для Эмоций */
+    #volnorez_chat img[class^="smile_emo_"],
+    #volnorez_chat .chat_history img[class^="smile_emo_"],
+    #volnorez_chat .chat_message_input img[class^="smile_emo_"],
+    #volnorez_chat .chat_smileys img[class^="smile_emo_"],
+    #volnorez_chat .chat_smileys [class^="smile_emo_"] {
+      width: 28px !important;
+      height: 28px !important;
+      min-width: 28px !important;
+      min-height: 28px !important;
+      max-width: none !important;
+      max-height: none !important;
+      display: inline-block !important;
+      vertical-align: bottom !important;
+      transform: none !important;
+      filter: none !important;
+      background-size: auto !important;
+      background-repeat: no-repeat !important;
+      background-position: inherit !important;
       border: 0 !important;
       box-shadow: none !important;
     }
@@ -189,6 +215,11 @@
       if (!root) return;
 
       root.querySelectorAll('img').forEach((img) => {
+        const cls = img.className || '';
+
+        /* ЭМОЦИИ НЕ ТРОГАЕМ */
+        if (cls.includes('smile_emo_')) return;
+
         const src = img.getAttribute('src');
         const dataSrc = img.getAttribute('data-src');
 

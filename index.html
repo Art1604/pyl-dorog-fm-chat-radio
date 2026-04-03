@@ -3,349 +3,131 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#c9c9c9" />
   <base href="https://volnorez.com/">
-  <title>ПыЛь_ДоРоГ FM — Радио и чат</title>
-
-  <link rel="preconnect" href="https://volnorez.com" crossorigin>
-  <link rel="preconnect" href="https://unpkg.com" crossorigin>
+  <title>ПыЛь_ДоРоГ FM</title>
 
   <style>
-    :root{
-      --bg:#cfcfcf;
-      --panel:#d4d4d4;
-      --edge-dark:#8a8a8a;
-      --edge-light:#ffffff;
-      --text:#222;
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #dcdcdc;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
     }
 
-    *{box-sizing:border-box}
-    html,body{height:100%}
-
-    body{
-      margin:0;
-      background:linear-gradient(145deg,#e4e4e4,#bdbdbd);
-      color:var(--text);
-      font-family:Arial,Helvetica,sans-serif;
-      overflow:hidden;
+    .app {
+      max-width: 980px;
+      margin: 8px auto;
+      background: #e5e5e5;
+      border: 1px solid #9a9a9a;
+      border-radius: 8px;
+      box-shadow: inset 0 1px 0 #ffffff;
+      overflow: hidden;
     }
 
-    .app{
-      height:100%;
-      display:flex;
-      flex-direction:column;
-      padding:8px;
-      gap:8px;
+    .body-wrap {
+      padding: 6px;
+      background: #e5e5e5;
     }
 
-    .bevel{
-      background:var(--panel);
-      border-top:1px solid var(--edge-light);
-      border-left:1px solid var(--edge-light);
-      border-right:1px solid var(--edge-dark);
-      border-bottom:1px solid var(--edge-dark);
-      box-shadow:inset 1px 1px 0 rgba(255,255,255,.5), inset -1px -1px 0 rgba(0,0,0,.08);
+    .player-box {
+      background: #e5e5e5;
+      margin-bottom: 4px;
     }
 
-    .top-menu{
-      display:flex;
-      gap:10px;
-      padding:8px;
-      align-items:center;
-      min-height:46px;
-      flex-wrap:wrap;
-      background:linear-gradient(#f0f0f0,#cfcfcf);
+    .chat-frame {
+      height: 560px;
+      background: #dcdcdc;
+      border: 1px solid #9f9f9f;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: inset 0 1px 0 #f8f8f8;
+      position: relative;
     }
 
-    .brand{
-      font-weight:700;
-      padding:7px 12px;
-      letter-spacing:.2px;
-      background:linear-gradient(#f5f5f5,#d7d7d7);
-      border-top:1px solid #fff;
-      border-left:1px solid #fff;
-      border-right:1px solid #8d8d8d;
-      border-bottom:1px solid #8d8d8d;
-      white-space:nowrap;
+    #volnorez_chat {
+      width: 100%;
+      height: 100%;
+      display: block;
     }
 
-    .menu-group{position:relative}
-
-    .menu-button{
-      appearance:none;
-      border:0;
-      cursor:pointer;
-      padding:8px 34px 8px 12px;
-      min-width:166px;
-      text-align:left;
-      font-size:14px;
-      color:#222;
-      border-top:1px solid #fff;
-      border-left:1px solid #fff;
-      border-right:1px solid #8d8d8d;
-      border-bottom:1px solid #8d8d8d;
-      background:linear-gradient(#efefef,#d2d2d2);
-      position:relative;
+    .fail {
+      display: none;
+      padding: 10px;
+      font-size: 12px;
+      color: #333;
+      background: #fff5d8;
+      border-top: 1px solid #d9c98d;
     }
 
-    .menu-button::after{
-      content:'▼';
-      position:absolute;
-      right:10px;
-      top:50%;
-      transform:translateY(-50%);
-      font-size:11px;
-      color:#444;
+    /* лёгкая безопасная правка смайлов */
+    .chat_message_input > img {
+      vertical-align: bottom !important;
+      margin-top: -8px !important;
+      margin-bottom: -4px !important;
     }
 
-    .menu-button:hover{background:linear-gradient(#f6f6f6,#dbdbdb)}
-
-    .dropdown{
-      display:none;
-      position:absolute;
-      top:calc(100% + 4px);
-      left:0;
-      min-width:240px;
-      z-index:20;
-      padding:6px;
-      background:#dbdbdb;
-      border-top:1px solid #fff;
-      border-left:1px solid #fff;
-      border-right:1px solid #8d8d8d;
-      border-bottom:1px solid #8d8d8d;
-      box-shadow:3px 3px 10px rgba(0,0,0,.18);
-    }
-
-    .menu-group:hover .dropdown,
-    .menu-group:focus-within .dropdown{display:block}
-
-    .menu-item{
-      display:block;
-      width:100%;
-      border:0;
-      background:transparent;
-      cursor:pointer;
-      text-align:left;
-      padding:8px 10px;
-      border-radius:4px;
-      color:#222;
-      font-size:14px;
-      text-decoration:none;
-    }
-
-    .menu-item:hover{background:linear-gradient(145deg,#e0e0e0,#f0f0f0)}
-
-    .layout{
-      min-height:0;
-      flex:1;
-      display:grid;
-      grid-template-rows:auto 1fr;
-      gap:8px;
-    }
-
-    .player-panel{
-      padding:10px;
-      background:linear-gradient(#efefef,#d6d6d6);
-    }
-
-    .player-title{
-      font-size:13px;
-      font-weight:700;
-      margin-bottom:8px;
-      color:#3b3b3b;
-    }
-
-    .player-box{
-      padding:8px;
-      background:#e5e5e5;
-      border-top:1px solid #fff;
-      border-left:1px solid #fff;
-      border-right:1px solid #8f8f8f;
-      border-bottom:1px solid #8f8f8f;
-    }
-
-    .chat-shell{
-      min-height:0;
-      padding:8px;
-      background:linear-gradient(#dadada,#c7c7c7);
-    }
-
-    .chat-frame{
-      height:100%;
-      min-height:420px;
-      position:relative;
-      padding:8px;
-      background:#d6d6d6;
-      border-top:1px solid #fff;
-      border-left:1px solid #fff;
-      border-right:1px solid #8a8a8a;
-      border-bottom:1px solid #8a8a8a;
-      overflow:hidden;
-    }
-
-    #volnorez_chat{
-      width:100%;
-      height:100%;
-      min-height:404px;
-      display:block;
-    }
-
-    /* мягкий серый тон для chat_js */
-    .chat_cont{
-      font-family:Arial,Helvetica,sans-serif !important;
-      background-color:#dfdfdf !important;
-      border-color:#f7f2f7 !important;
-      box-shadow:inset 1px -2px 5px 1px rgba(0,0,0,.25) !important;
-      border-radius:10px !important;
-      overflow:hidden !important;
-    }
-
-    .chat_users_container{
-      background:#d8d8d8 !important;
-      border:1px solid #f7f2f7 !important;
-      box-shadow:0 -1px 4px 0 rgba(0,0,0,.12) !important;
-    }
-
-    .chat_history_container,
-    .chat_settings,
-    .chat_smileys,
-    .chat_bottom,
-    .chat_tabs > div,
-    .chat_private_tabs > div{
-      font-family:Arial,Helvetica,sans-serif !important;
-    }
-
-    .chat_message_input,
-    .chat_nick_input{
-      background:#f3f3f3 !important;
-      color:#222 !important;
-      border-color:#b8b8b8 !important;
-    }
-
-    .chat_common_tab.selected,
-    .chat_private_tabs > div.selected,
-    .chat_tabs > div.selected{
-      background:#e7e7e7 !important;
-      color:#2f2f2f !important;
-      border-color:#b3b3b3 !important;
-    }
-
-    .chat_usr.chat_ut_owner,
-    .chat_usr.chat_ut_rj,
-    .chat_mynick,
-    .chat_msg_date span{
-      color:#5b5b5b !important;
-    }
-
-    .chat_msg:hover{
-      background-color:#e1e1e1 !important;
-    }
-
-    /* родная правка Volnorez для смайлов в поле ввода */
-    .chat_message_input > img{
-      vertical-align:bottom !important;
-      margin-top:-8px !important;
-      margin-bottom:-4px !important;
-    }
-
-    /* смайлы внутри сообщений */
     .chat_history > div > div > img,
-    .chat_msg .chat_msg_text img{
-      vertical-align:bottom !important;
-      display:inline !important;
-      float:none !important;
-      position:static !important;
+    .chat_msg .chat_msg_text img {
+      vertical-align: bottom !important;
+      display: inline !important;
+      float: none !important;
+      position: static !important;
     }
 
-    /* не даём внешним стилям ломать smile_* */
     #volnorez_chat img[class^="smile_"],
     #volnorez_chat .chat_history img[class^="smile_"],
-    #volnorez_chat .chat_message_input img[class^="smile_"],
-    #volnorez_chat .chat_smileys img[class^="smile_"]{
-      display:inline-block !important;
-      max-width:none !important;
-      max-height:none !important;
-      vertical-align:bottom !important;
-      transform:none !important;
-      border:0 !important;
-      box-shadow:none !important;
-      background-repeat:no-repeat !important;
-      background-position:center center !important;
+    #volnorez_chat .chat_message_input img[class^="smile_"] {
+      max-width: none !important;
+      max-height: none !important;
+      vertical-align: bottom !important;
+      transform: none !important;
+      border: 0 !important;
+      box-shadow: none !important;
     }
 
-    /* вкладки панели смайлов */
-    #volnorez_chat .smileys_tabs{
-      white-space:nowrap !important;
-      overflow-x:auto !important;
-      overflow-y:hidden !important;
+    #volnorez_chat .smileys_tabs {
+      white-space: nowrap !important;
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
     }
 
-    #volnorez_chat .smileys_sheet{
-      overflow:auto !important;
+    #volnorez_chat .smileys_sheet {
+      overflow: auto !important;
     }
 
-    /* видео-мемы только визуально */
     #volnorez_chat .video-container,
-    #volnorez_chat .smile_wrapper .video-container{
-      background:#000 !important;
-      border-radius:4px !important;
-      overflow:hidden !important;
+    #volnorez_chat .smile_wrapper .video-container {
+      background: #000 !important;
+      border-radius: 4px !important;
+      overflow: hidden !important;
     }
 
     #volnorez_chat .video_meme,
     #volnorez_chat .smile_wrapper video,
-    #volnorez_chat .chat_history video{
-      display:block !important;
-      width:100% !important;
-      height:100% !important;
-      object-fit:contain !important;
-      background:#000 !important;
+    #volnorez_chat .chat_history video {
+      display: block !important;
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: contain !important;
+      background: #000 !important;
     }
 
-    .fallback{
-      position:absolute;
-      inset:8px;
-      display:none;
-      place-items:center;
-      text-align:center;
-      padding:24px;
-      background:linear-gradient(#d8d8d8,#c6c6c6);
-      border-top:1px solid #fff;
-      border-left:1px solid #fff;
-      border-right:1px solid #8a8a8a;
-      border-bottom:1px solid #8a8a8a;
-    }
+    @media (max-width: 700px) {
+      .app {
+        margin: 0;
+        border-radius: 0;
+        max-width: 100%;
+      }
 
-    .fallback.show{display:grid}
-
-    .fallback-inner{
-      max-width:520px;
-      padding:18px;
-      background:#efefef;
-      border-top:1px solid #fff;
-      border-left:1px solid #fff;
-      border-right:1px solid #8f8f8f;
-      border-bottom:1px solid #8f8f8f;
-    }
-
-    .fallback a{color:#234d72}
-
-    @media (max-width: 720px){
-      body{overflow:auto}
-      .app{height:auto;min-height:100%}
-      .layout{grid-template-rows:auto minmax(560px,1fr)}
-      .menu-button{min-width:unset;width:100%}
-      .menu-group{width:100%}
-      .brand{width:100%;text-align:center}
-    }
-
-    @media (max-width: 700px){
-      .chat-frame{
-        min-height:calc(100vh - 220px);
+      .chat-frame {
+        height: calc(100vh - 95px);
       }
     }
   </style>
+</head>
 
+<body>
   <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
   <script>
     (async () => {
@@ -353,70 +135,46 @@
         if (window.vkBridge && vkBridge.send) {
           await vkBridge.send('VKWebAppInit');
         }
-      } catch (e) {}
+      } catch (e) {
+        console.log('VK init error:', e);
+      }
     })();
   </script>
-</head>
-<body>
-  <div class="app">
-    <div class="top-menu bevel">
-      <div class="brand">ПыЛь_ДоРоГ FM — Радио и чат</div>
 
-      <div class="menu-group">
-        <button class="menu-button" type="button">Перейти на Волнорез</button>
-        <div class="dropdown">
-          <a class="menu-item" href="https://volnorez.com/pyl_dorog-fm" target="_blank" rel="noopener">💻 Обычный сайт</a>
-          <a class="menu-item" href="https://m.volnorez.com/pyl_dorog-fm" target="_blank" rel="noopener">📱 Мобильная версия</a>
+  <div class="app">
+    <div class="body-wrap">
+
+      <!-- ПЛЕЕР -->
+      <div class="player-box">
+        <div id="vplayer001e157d">
+          <a href="https://volnorez.com/pyl_dorog-fm" title="радио ПыЛь_ДоРоГ FM">
+            радио ПыЛь_ДоРоГ FM
+          </a>
+          <script
+            async
+            type="text/javascript"
+            src="https://volnorez.com/plugins/jscode/player_js/001e157d/%7B%22share%22%3A%22source%22%2C%22skin%22%3A%22skin2%22%2C%22style%22%3A%7B%22bg_clr%22%3A%22237%2C237%2C237%22%2C%22b_clr%22%3A%22179%2C179%2C179%22%2C%22icon_clr%22%3A%2266%2C66%2C66%22%2C%22ch%22%3A%2237%22%2C%22bg_clr1%22%3A%22243%2C243%2C243%22%2C%22bg_clr2%22%3A%22196%2C196%2C196%22%2C%22bg_clr3%22%3A%22183%2C183%2C183%22%2C%22bg_clr4%22%3A%22167%2C167%2C167%22%2C%22txt_clr%22%3A%22205%2C209%2C205%22%7D%7D">
+          </script>
         </div>
       </div>
 
-      <div class="menu-group">
-        <button class="menu-button" type="button">Разное</button>
-        <div class="dropdown">
-          <a class="menu-item" href="https://vk.com/dust_dorogfm" target="_blank" rel="noopener">📢 Группа ПыЛь_ДоРоГ FM</a>
-          <a class="menu-item" href="https://vk.com/topic-227352123_52478122" target="_blank" rel="noopener">📝 Книга жалоб и предложений</a>
-          <a class="menu-item" href="https://vk.com/topic-227352123_52496434" target="_blank" rel="noopener">🎵 Стол заказов</a>
+      <!-- ЧАТ -->
+      <div class="chat-frame">
+        <div
+          id="volnorez_chat"
+          data-code="001e157d"
+          data-skin="skin_4"
+          data-skin-params="'bg_clr':'224,224,224','panel_clr':'214,214,214','ib_clr':'247,247,247','msgbg_clr':'239,239,239','omsgbg_clr':'231,231,231','txt_clr':'32,32,32','b_clr':'186,186,186','icon_clr':'108,108,108','label_clr':'78,78,78','dj_clr':'52,52,52'">
         </div>
+
+        <script async src="https://volnorez.com/plugins/jscode/chat_js"></script>
       </div>
     </div>
 
-    <div class="layout">
-      <div class="player-panel bevel">
-        <div class="player-title">Онлайн-эфир станции</div>
-        <div class="player-box">
-          <div id="vplayer001e157d">
-            <a href="https://volnorez.com/pyl_dorog-fm" title="радио ПыЛь_ДоРоГ FM">радио ПыЛь_ДоРоГ FM</a>
-            <script
-              async
-              type="text/javascript"
-              src="https://volnorez.com/plugins/jscode/player_js/001e157d/%7B%22share%22%3A%22source%22%2C%22skin%22%3A%22skin2%22%2C%22style%22%3A%7B%22bg_clr%22%3A%22237%2C237%2C237%22%2C%22b_clr%22%3A%22179%2C179%2C179%22%2C%22icon_clr%22%3A%2266%2C66%2C66%22%2C%22ch%22%3A%2237%22%2C%22bg_clr1%22%3A%22243%2C243%2C243%22%2C%22bg_clr2%22%3A%22196%2C196%2C196%22%2C%22bg_clr3%22%3A%22183%2C183%2C183%22%2C%22bg_clr4%22%3A%22167%2C167%2C167%22%2C%22txt_clr%22%3A%22205%2C209%2C205%22%7D%7D">
-            </script>
-          </div>
-        </div>
-      </div>
-
-      <div class="chat-shell bevel">
-        <div class="chat-frame">
-          <div
-            id="volnorez_chat"
-            data-code="001e157d"
-            data-skin="skin_4"
-            data-skin-params="'bg_clr':'224,224,224','panel_clr':'214,214,214','ib_clr':'247,247,247','msgbg_clr':'239,239,239','omsgbg_clr':'231,231,231','txt_clr':'32,32,32','b_clr':'186,186,186','icon_clr':'108,108,108','label_clr':'78,78,78','dj_clr':'52,52,52'">
-          </div>
-
-          <div class="fallback" id="chatFallback" aria-live="polite">
-            <div class="fallback-inner">
-              <h3 style="margin:0 0 10px">Чат не загрузился</h3>
-              <p style="margin:0 0 10px">Обычно это связано с блокировкой внешнего скрипта, ограничением браузера или ответом Volnorez.</p>
-              <p style="margin:0">Открой чат напрямую на <a href="https://volnorez.com/pyl_dorog-fm" target="_blank" rel="noopener">странице станции</a>.</p>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="fail" id="failBox">
+      Чат не загрузился.
     </div>
   </div>
-
-  <script async src="https://volnorez.com/plugins/jscode/chat_js"></script>
 
   <script>
     function normalizeUrl(url) {
@@ -448,48 +206,19 @@
       });
     }
 
-    function warmMemeVideos() {
-      const root = document.getElementById('volnorez_chat');
-      if (!root) return;
-
-      root.querySelectorAll('.video_meme source[data-src]').forEach((source) => {
-        if (!source.getAttribute('src')) {
-          source.setAttribute('src', normalizeUrl(source.getAttribute('data-src')));
-        }
-      });
-    }
-
-    function bindChatHelpers() {
-      const root = document.getElementById('volnorez_chat');
-      if (!root) return;
-
-      root.addEventListener('click', (e) => {
-        if (e.target.closest('.chat_smile_btn') || e.target.closest('.smileys_tabs')) {
-          setTimeout(fixSmileUrls, 120);
-          setTimeout(fixSmileUrls, 500);
-        }
-
-        if (e.target.closest('[data-tab="9"]')) {
-          setTimeout(fixSmileUrls, 120);
-          setTimeout(warmMemeVideos, 350);
-          setTimeout(warmMemeVideos, 1000);
-        }
-      });
-    }
-
     window.addEventListener('load', () => {
       const root = document.getElementById('volnorez_chat');
-      const fallback = document.getElementById('chatFallback');
+      const fail = document.getElementById('failBox');
 
       setTimeout(() => {
-        const hasRendered = root && root.children.length > 0 && root.innerText.trim().length > 0;
-        if (!hasRendered && fallback) fallback.classList.add('show');
+        if (!root || root.children.length === 0) {
+          fail.style.display = 'block';
+        }
       }, 5000);
 
       setTimeout(fixSmileUrls, 800);
       setTimeout(fixSmileUrls, 1800);
       setTimeout(fixSmileUrls, 3200);
-      setTimeout(bindChatHelpers, 1200);
     });
   </script>
 </body>
